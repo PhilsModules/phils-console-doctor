@@ -1,0 +1,14 @@
+{
+  "PHILSCONSOLEDOCTOR.Settings.AIUrlName": "KI-Service URL",
+  "PHILSCONSOLEDOCTOR.Settings.AIUrlHint": "Die URL des KI-Dienstes für die Analyse.",
+  "PHILSCONSOLEDOCTOR.Settings.MaxLogsName": "Max Logs",
+  "PHILSCONSOLEDOCTOR.Settings.MaxLogsHint": "Maximale Anzahl der Logs im Verlauf.",
+  "PHILSCONSOLEDOCTOR.Prompt.Analysis": "FoundryVTT Fehleranalyse:\n\nZEITSTEMPEL: {timestamp}\nTYP: {type}\n\nFEHLERMELDUNG:\n{message}\n\nVOLLSTÄNDIGER STACK TRACE:\n{stack}\n\nAKTIVE MODULE:\n{modules}\n\nAufgabe: Analysiere den Stack Trace und die Fehlermeldung. Identifiziere den wahrscheinlichen Verursacher (System, Core oder spezifisches Modul). Erkläre die Lösung.",
+  "PHILSCONSOLEDOCTOR.UI.Warn": "Warnung",
+  "PHILSCONSOLEDOCTOR.UI.Error": "Fehler",
+  "PHILSCONSOLEDOCTOR.UI.ClearLog": "Log leeren",
+  "PHILSCONSOLEDOCTOR.UI.NoEntries": "Keine Einträge gefunden.",
+  "PHILSCONSOLEDOCTOR.UI.AskAI": "KI Fragen",
+  "PHILSCONSOLEDOCTOR.UI.PromptCopied": "Prompt kopiert! Öffne KI...",
+  "PHILSCONSOLEDOCTOR.UI.ClipboardFailed": "Zwischenablage fehlgeschlagen."
+}

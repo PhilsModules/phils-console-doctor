@@ -1,0 +1,14 @@
+{
+  "PHILSCONSOLEDOCTOR.Settings.AIUrlName": "AI Service URL",
+  "PHILSCONSOLEDOCTOR.Settings.AIUrlHint": "The URL of the AI service to use for analysis.",
+  "PHILSCONSOLEDOCTOR.Settings.MaxLogsName": "Max Logs",
+  "PHILSCONSOLEDOCTOR.Settings.MaxLogsHint": "Maximum number of logs to keep in history.",
+  "PHILSCONSOLEDOCTOR.Prompt.Analysis": "FoundryVTT Error Analysis:\n\nTIMESTAMP: {timestamp}\nTYPE: {type}\n\nERROR MESSAGE:\n{message}\n\nFULL STACK TRACE:\n{stack}\n\nACTIVE MODULES:\n{modules}\n\nTask: Analyze the stack trace and error message. Identify the likely culprit (System, Core, or specific Module). Explain the fix.",
+  "PHILSCONSOLEDOCTOR.UI.Warn": "Warn",
+  "PHILSCONSOLEDOCTOR.UI.Error": "Error",
+  "PHILSCONSOLEDOCTOR.UI.ClearLog": "Clear Log",
+  "PHILSCONSOLEDOCTOR.UI.NoEntries": "No entries found.",
+  "PHILSCONSOLEDOCTOR.UI.AskAI": "Ask AI",
+  "PHILSCONSOLEDOCTOR.UI.PromptCopied": "Prompt copied! Opening AI...",
+  "PHILSCONSOLEDOCTOR.UI.ClipboardFailed": "Clipboard failed."
+}
