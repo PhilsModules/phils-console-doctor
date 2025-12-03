@@ -3,8 +3,6 @@
 ![Foundry v13 Compatible](https://img.shields.io/badge/Foundry-v13-brightgreen)
 ![Foundry v12 Compatible](https://img.shields.io/badge/Foundry-v12-green)
 ![License](https://img.shields.io/badge/License-GPLv3-blue)
-![Version](https://img.shields.io/badge/Version-1.0.0-orange)
-[![Patreon](https://img.shields.io/badge/Support-Patreon-ff424d?logo=patreon)](https://www.patreon.com/PhilsModules)
 
 **Phils Console Doctor** is your personal diagnostic assistant for Foundry VTT. It captures console errors and warnings in real-time and lets you analyze them with AI with a single click.
 
@@ -23,6 +21,8 @@ Stop guessing why your game is lagging or breaking. Ask the Doctor.
     *   Claude
     *   Microsoft Copilot
     *   Perplexity
+*   **Smart Grouping:** Deduplicates identical errors to keep your log clean (e.g., `x5` badge).
+*   **Module Blame:** Automatically identifies and badges the module responsible for an error (e.g., `[Midi QOL]`).
 *   **Smart Prompts:** Automatically generates a detailed prompt with the error message, stack trace, and your active module list.
 *   **Clean UI:** A beautiful, native "Parchment" interface that fits perfectly into Foundry VTT.
 *   **Fully Localized:** Interface and AI prompts available in **English** and **German**.
@@ -55,7 +55,7 @@ Stop guessing why your game is lagging or breaking. Ask the Doctor.
 
 ---
 
-# Deutsche Anleitung
+# 🇩🇪 Deutsche Anleitung
 
 **Phils Console Doctor** ist dein persönlicher Diagnose-Assistent für Foundry VTT. Er fängt Konsolen-Fehler und Warnungen in Echtzeit ab und lässt dich diese mit einem Klick per KI analysieren.
 
@@ -74,6 +74,8 @@ Hör auf zu raten, warum dein Spiel laggt oder kaputt ist. Frag den Doktor.
     *   Claude
     *   Microsoft Copilot
     *   Perplexity
+*   **Smart Grouping:** Fasst identische Fehler zusammen, um den Log sauber zu halten (z.B. `x5` Badge).
+*   **Module Blame:** Erkennt automatisch, welches Modul einen Fehler verursacht hat und markiert es (z.B. `[Midi QOL]`).
 *   **Smarte Prompts:** Erstellt automatisch einen detaillierten Prompt mit Fehlermeldung, Stack Trace und deiner Modul-Liste.
 *   **Sauberes Design:** Ein schönes, natives "Pergament"-Interface, das perfekt zu Foundry passt.
 *   **Vollständig Lokalisiert:** Interface und KI-Prompts komplett auf **Deutsch** und **Englisch**.
@@ -94,14 +96,7 @@ Hör auf zu raten, warum dein Spiel laggt oder kaputt ist. Frag den Doktor.
 3.  **Analysieren:** Klicke auf **KI Fragen** bei einem Eintrag.
 4.  **Lösen:** Das Modul kopiert einen perfekten Prompt. Füge ihn einfach in das sich öffnende KI-Fenster ein, um sofort eine Lösung zu erhalten.
 
-## ❤️ Support the Development
-If you enjoy this module and want to support open-source development for Foundry VTT, check out my Patreon!
+## 👨‍💻 Autor & Lizenz
 
-Gefällt dir das Modul? Unterstütze die Weiterentwicklung auf Patreon!
-
-[**Become a Patron**](https://www.patreon.com/PhilsModules)
-
----
-
-**Made with ❤️ for the Foundry VTT Community by [PhilsModules](https://github.com/PhilsModules)**
-*Licensed under GPL-3.0*
+*   **Phil** (GitHub: [PhilsModules](https://github.com/PhilsModules))
+*   Lizenziert unter [GPL-3.0](LICENSE).

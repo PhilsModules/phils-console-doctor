@@ -1,6 +1,6 @@
 /**
  * PHILS CONSOLE DOCTOR
- * Version: 3.2.9 (Polished Output)
+ * Version: 3.3.0 (Smart Grouping & Module Blame)
  */
 
 const MODULE_ID = 'phils-console-doctor';
@@ -36,12 +36,48 @@ function pcdPatchConsole() {
         if (args[0] instanceof Error) stack = args[0].stack;
         else stack = new Error().stack;
 
+        // --- SMART GROUPING (Deduplication) ---
+        if (PCD_CAPTURED_LOGS.length > 0) {
+            const lastEntry = PCD_CAPTURED_LOGS[0];
+            if (lastEntry.message === msg && lastEntry.type === type) {
+                lastEntry.count = (lastEntry.count || 1) + 1;
+                lastEntry.timestamp = new Date().toLocaleTimeString(); // Update to latest occurrence
+
+                // Update UI immediately if possible
+                if (typeof ui !== 'undefined' && ui.philsConsoleDoctor && ui.philsConsoleDoctor.rendered) {
+                    ui.philsConsoleDoctor.updateListContent();
+                }
+                return;
+            }
+        }
+
+        // --- MODULE BLAME (Source Identification) ---
+        let sourceModule = null;
+        if (stack) {
+            const match = stack.match(/modules\/([^\/]+)\//);
+            if (match && match[1] && match[1] !== MODULE_ID) {
+                const moduleId = match[1];
+                // game.modules might not be ready immediately, but usually is when errors happen later
+                if (typeof game !== 'undefined' && game.modules) {
+                    const module = game.modules.get(moduleId);
+                    sourceModule = {
+                        id: moduleId,
+                        title: module ? module.title : moduleId
+                    };
+                } else {
+                    sourceModule = { id: moduleId, title: moduleId };
+                }
+            }
+        }
+
         const entry = {
             id: Date.now(),
             timestamp: new Date().toLocaleTimeString(),
             type,
             message: msg,
-            stack
+            stack,
+            count: 1,
+            sourceModule
         };
 
         PCD_CAPTURED_LOGS.unshift(entry);
@@ -78,9 +114,8 @@ function pcdPatchConsole() {
     });
 
     // 2. Resource Loading Errors (Capture Phase = true)
-    // This catches 404s on images, scripts, etc. which don't bubble.
     window.addEventListener('error', (event) => {
-        if (event instanceof Event && (event.target instanceof HTMLImageElement || event.target instanceof HTMLScriptElement || event.target instanceof HTMLLinkElement)) {
+        if (event instanceof Event && event.target && (event.target.src || event.target.href)) {
             capture('error', [event]);
         }
     }, true);
@@ -89,6 +124,37 @@ function pcdPatchConsole() {
     window.addEventListener('unhandledrejection', (event) => {
         capture('error', [`[Unhandled Promise Rejection] ${event.reason}`]);
     });
+
+    // 4. Network Errors (Fetch & XHR)
+    const originalFetch = window.fetch;
+    window.fetch = async function (...args) {
+        try {
+            const response = await originalFetch(...args);
+            if (!response.ok) {
+                capture('error', [`[Network Error] Fetch failed: ${response.status} ${response.statusText} (${args[0]})`]);
+            }
+            return response;
+        } catch (err) {
+            capture('error', [`[Network Error] Fetch exception: ${err.message} (${args[0]})`]);
+            throw err;
+        }
+    };
+
+    const originalXhrOpen = XMLHttpRequest.prototype.open;
+    const originalXhrSend = XMLHttpRequest.prototype.send;
+
+    XMLHttpRequest.prototype.open = function (method, url) {
+        this._pcdUrl = url;
+        this._pcdMethod = method;
+        return originalXhrOpen.apply(this, arguments);
+    };
+
+    XMLHttpRequest.prototype.send = function () {
+        this.addEventListener('error', () => {
+            capture('error', [`[Network Error] XHR failed: ${this._pcdMethod} ${this._pcdUrl}`]);
+        });
+        return originalXhrSend.apply(this, arguments);
+    };
 
     console.log("🏥 Phils Console Doctor active (Fast Start Mode).");
 }
@@ -166,7 +232,7 @@ function openDoctorWindow() {
 
 // --- APP CLASS ---
 class PhilsConsoleDoctorApp extends Application {
-    constructor() { super(); this.filters = { warn: true, error: true }; }
+    constructor() { super(); this.filters = { warn: true, error: true }; this.searchQuery = ""; }
 
     static get defaultOptions() {
         return foundry.utils.mergeObject(super.defaultOptions, {
@@ -189,6 +255,9 @@ class PhilsConsoleDoctorApp extends Application {
     _renderInner(data) {
         const header = `
             <div class="pcd-header">
+                <div class="pcd-search-container" style="flex: 1; margin-right: 5px;">
+                    <input type="text" id="pcd-search-input" placeholder="${game.i18n.localize("PHILSCONSOLEDOCTOR.UI.SearchPlaceholder")}" value="${this.searchQuery}" style="width: 100%; box-sizing: border-box;">
+                </div>
                 <button class="pcd-filter-btn ${this.filters.warn ? 'active' : ''}" data-filter="warn">
                     <i class="fas fa-exclamation-triangle"></i> ${game.i18n.localize("PHILSCONSOLEDOCTOR.UI.Warn")}
                 </button>
@@ -216,6 +285,11 @@ class PhilsConsoleDoctorApp extends Application {
             this.updateListContent();
         });
 
+        html.find('#pcd-search-input').on('input', ev => {
+            this.searchQuery = ev.target.value.toLowerCase();
+            this.updateListContent();
+        });
+
         html.find('[data-action="clear"]').click(ev => {
             ev.preventDefault();
             PCD_CAPTURED_LOGS.length = 0;
@@ -227,7 +301,14 @@ class PhilsConsoleDoctorApp extends Application {
         if (!this.listContainer) return;
         this.listContainer.empty();
 
-        const visibleLogs = PCD_CAPTURED_LOGS.filter(l => this.filters[l.type]);
+        const visibleLogs = PCD_CAPTURED_LOGS.filter(l => {
+            if (!this.filters[l.type]) return false;
+            if (this.searchQuery) {
+                const query = this.searchQuery;
+                return l.message.toLowerCase().includes(query) || (l.stack && l.stack.toLowerCase().includes(query));
+            }
+            return true;
+        });
 
         if (visibleLogs.length === 0) {
             this.listContainer.append(`<div style="padding:40px; text-align:center; color:#7a7971; font-style:italic;">${game.i18n.localize("PHILSCONSOLEDOCTOR.UI.NoEntries")}</div>`);
@@ -240,6 +321,8 @@ class PhilsConsoleDoctorApp extends Application {
                     <div class="pcd-meta">
                         <span><i class="far fa-clock"></i> ${log.timestamp}</span>
                         <span style="opacity:0.8">${log.type.toUpperCase()}</span>
+                        ${log.count > 1 ? `<span class="pcd-badge count" title="Occurred ${log.count} times">x${log.count}</span>` : ''}
+                        ${log.sourceModule ? `<span class="pcd-badge module" title="Source: ${log.sourceModule.title}">${log.sourceModule.title}</span>` : ''}
                     </div>
                     <div class="pcd-message">${log.message}</div>
                     <div class="pcd-action-area">

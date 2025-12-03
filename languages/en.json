@@ -10,5 +10,6 @@
   "PHILSCONSOLEDOCTOR.UI.NoEntries": "No entries found.",
   "PHILSCONSOLEDOCTOR.UI.AskAI": "Ask AI",
   "PHILSCONSOLEDOCTOR.UI.PromptCopied": "Prompt copied! Opening AI...",
-  "PHILSCONSOLEDOCTOR.UI.ClipboardFailed": "Clipboard failed."
+  "PHILSCONSOLEDOCTOR.UI.ClipboardFailed": "Clipboard failed.",
+  "PHILSCONSOLEDOCTOR.UI.SearchPlaceholder": "Search logs..."
 }

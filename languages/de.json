@@ -10,5 +10,6 @@
   "PHILSCONSOLEDOCTOR.UI.NoEntries": "Keine Einträge gefunden.",
   "PHILSCONSOLEDOCTOR.UI.AskAI": "KI Fragen",
   "PHILSCONSOLEDOCTOR.UI.PromptCopied": "Prompt kopiert! Öffne KI...",
-  "PHILSCONSOLEDOCTOR.UI.ClipboardFailed": "Zwischenablage fehlgeschlagen."
+  "PHILSCONSOLEDOCTOR.UI.ClipboardFailed": "Zwischenablage fehlgeschlagen.",
+  "PHILSCONSOLEDOCTOR.UI.SearchPlaceholder": "Logs durchsuchen..."
 }
