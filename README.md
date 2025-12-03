@@ -1,10 +1,12 @@
-# Phils Console Doctor 🏥
+# Phil's Console Doctor 🏥
 
 ![Foundry v13 Compatible](https://img.shields.io/badge/Foundry-v13-brightgreen)
 ![Foundry v12 Compatible](https://img.shields.io/badge/Foundry-v12-green)
 ![License](https://img.shields.io/badge/License-GPLv3-blue)
+![Version](https://img.shields.io/badge/Version-1.1.0-orange)
+[![Patreon](https://img.shields.io/badge/Support-Patreon-ff424d?logo=patreon)](https://www.patreon.com/PhilsModules)
 
-**Phils Console Doctor** is your personal diagnostic assistant for Foundry VTT. It captures console errors and warnings in real-time and lets you analyze them with AI with a single click.
+**Phil's Console Doctor** is your personal diagnostic assistant for Foundry VTT. It captures console errors and warnings in real-time and lets you analyze them with AI with a single click.
 
 Stop guessing why your game is lagging or breaking. Ask the Doctor.
 
@@ -57,7 +59,7 @@ Stop guessing why your game is lagging or breaking. Ask the Doctor.
 
 # 🇩🇪 Deutsche Anleitung
 
-**Phils Console Doctor** ist dein persönlicher Diagnose-Assistent für Foundry VTT. Er fängt Konsolen-Fehler und Warnungen in Echtzeit ab und lässt dich diese mit einem Klick per KI analysieren.
+**Phil's Console Doctor** ist dein persönlicher Diagnose-Assistent für Foundry VTT. Er fängt Konsolen-Fehler und Warnungen in Echtzeit ab und lässt dich diese mit einem Klick per KI analysieren.
 
 Hör auf zu raten, warum dein Spiel laggt oder kaputt ist. Frag den Doktor.
 
@@ -96,7 +98,18 @@ Hör auf zu raten, warum dein Spiel laggt oder kaputt ist. Frag den Doktor.
 3.  **Analysieren:** Klicke auf **KI Fragen** bei einem Eintrag.
 4.  **Lösen:** Das Modul kopiert einen perfekten Prompt. Füge ihn einfach in das sich öffnende KI-Fenster ein, um sofort eine Lösung zu erhalten.
 
-## 👨‍💻 Autor & Lizenz
+---
 
-*   **Phil** (GitHub: [PhilsModules](https://github.com/PhilsModules))
-*   Lizenziert unter [GPL-3.0](LICENSE).
+## 👨‍💻 Author
+* **Phil** (GitHub: [PhilsModules](https://github.com/PhilsModules))
+
+## 📄 License
+This module is licensed under the [GPL-3.0 License](LICENSE).
+
+---
+<div align="center">
+    <p>Made with ❤️ for the Foundry VTT Community</p>
+    <a href="https://www.patreon.com/PhilsModules">
+        <img src="https://c5.patreon.com/external/logo/become_a_patron_button.png" alt="Become a Patron" />
+    </a>
+</div>
