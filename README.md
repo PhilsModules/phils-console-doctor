@@ -94,7 +94,14 @@ Hör auf zu raten, warum dein Spiel laggt oder kaputt ist. Frag den Doktor.
 3.  **Analysieren:** Klicke auf **KI Fragen** bei einem Eintrag.
 4.  **Lösen:** Das Modul kopiert einen perfekten Prompt. Füge ihn einfach in das sich öffnende KI-Fenster ein, um sofort eine Lösung zu erhalten.
 
-## 👨‍💻 Autor & Lizenz
+## ❤️ Support the Development
+If you enjoy this module and want to support open-source development for Foundry VTT, check out my Patreon!
 
-*   **Phil** (GitHub: [PhilsModules](https://github.com/PhilsModules))
-*   Lizenziert unter [GPL-3.0](LICENSE).
+Gefällt dir das Modul? Unterstütze die Weiterentwicklung auf Patreon!
+
+[**Become a Patron**](https://www.patreon.com/PhilsModules)
+
+---
+
+**Made with ❤️ for the Foundry VTT Community by [PhilsModules](https://github.com/PhilsModules)**
+*Licensed under GPL-3.0*
