@@ -196,8 +196,8 @@ Hooks.once('init', () => {
 Hooks.on('renderSettings', (app, html) => {
     console.log("PCD: renderSettings hook fired.");
 
-    // Only for GM
-    if (!game.user.isGM) return;
+    // Only for GM - REMOVED to allow player access
+    // if (!game.user.isGM) return;
 
     const element = html instanceof HTMLElement ? html : html[0];
 

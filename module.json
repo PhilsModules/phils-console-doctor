@@ -1,7 +1,7 @@
 {
   "id": "phils-console-doctor",
   "title": "Phils Console Doctor",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "A smart console error tracker that captures logs, groups duplicates, identifies culprit modules, and helps you fix them with AI.",
   "authors": [
     {
@@ -12,7 +12,7 @@
   ],
   "url": "https://github.com/PhilsModules/phils-console-doctor",
   "manifest": "https://github.com/PhilsModules/phils-console-doctor/releases/latest/download/module.json",
-  "download": "https://github.com/PhilsModules/phils-console-doctor/releases/download/v1.1.0/module.zip",
+  "download": "https://github.com/PhilsModules/phils-console-doctor/releases/download/v1.1.1/module.zip",
   "compatibility": {
     "minimum": "11",
     "verified": "13"
