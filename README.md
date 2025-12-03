@@ -1,102 +1,126 @@
-# Phil's Console Doctor 🏥
+# Phil's AI Assistant 🧠
 
 ![Foundry v13 Compatible](https://img.shields.io/badge/Foundry-v13-brightgreen)
 ![Foundry v12 Compatible](https://img.shields.io/badge/Foundry-v12-green)
 ![License](https://img.shields.io/badge/License-GPLv3-blue)
-![Version](https://img.shields.io/badge/Version-1.1.0-orange)
+![Version](https://img.shields.io/badge/Version-1.0.0-orange)
 [![Patreon](https://img.shields.io/badge/Support-Patreon-ff424d?logo=patreon)](https://www.patreon.com/PhilsModules)
 
-**Phil's Console Doctor** is your personal diagnostic assistant for Foundry VTT. It captures console errors and warnings in real-time and lets you analyze them with AI with a single click.
+**Phil's AI Assistant** connects your Foundry VTT world with the power of modern AI (Google Gemini, ChatGPT, Claude, Copilot, Perplexity).
 
-Stop guessing why your game is lagging or breaking. Ask the Doctor.
+The core feature: **You don't need expensive API keys!**
+The module acts as an intelligent "Prompt Engineer". It reads data from your actors, items, or journals, creates the perfect prompt for the AI, and you simply copy it into the chat window of your favorite AI service.
 
-## 🚀 Key Features
+## 🚀 Features
 
-*   **Real-Time Monitoring:** Captures `console.warn` and `console.error` logs instantly.
-*   **Startup Protection (Fast Start):** Activates immediately when the script loads to catch bugs that happen *before* Foundry is fully initialized.
-*   **Aggressive Diagnosis:**
-    *   Catches **unhandled exceptions** and **promise rejections** that usually crash silently.
-    *   Detects **Resource Loading Errors** (broken images, scripts, 404s).
-*   **Multi-AI Support:** Choose your preferred AI assistant in the settings:
-    *   **Google Gemini** (Default)
-    *   ChatGPT
-    *   Claude
-    *   Microsoft Copilot
-    *   Perplexity
-*   **Smart Grouping:** Deduplicates identical errors to keep your log clean (e.g., `x5` badge).
-*   **Module Blame:** Automatically identifies and badges the module responsible for an error (e.g., `[Midi QOL]`).
-*   **Smart Prompts:** Automatically generates a detailed prompt with the error message, stack trace, and your active module list.
-*   **Clean UI:** A beautiful, native "Parchment" interface that fits perfectly into Foundry VTT.
-*   **Fully Localized:** Interface and AI prompts available in **English** and **German**.
+* **No API Costs:** Works with the free web versions of Gemini, ChatGPT, & Co.
+* **Context-Aware:** Automatically reads stats, descriptions, and rules from your items and actors.
+* **5 Powerful Modes:**
+    * 💬 **Chat / Lore:** Ask questions about rules or the backstory of an item.
+    * 🎨 **Image Prompts:** Generates detailed visual descriptions based on character stats.
+    * ✏️ **Update / Edit:** Let the AI modify stats, rewrite descriptions, or fix typos.
+    * 📖 **Write Story:** Have the AI write creative content for your Journal entries.
 
-## ⚡ Performance & Safety
 
-*   **Client-Side Only:** The module runs 100% locally in your browser. It does not affect the server or other players.
-*   **Passive Listener:** It only "listens" to the console. It does not actively query or block anything.
-*   **Memory Safe:** Only the last 50 logs are kept. Old logs are automatically deleted to keep memory usage tiny.
-*   **Zero Overhead:** The UI consumes no resources when closed.
+* **Safety First:** Automatically creates a **Backup** (Copy) of your Journal before applying changes.
+* **Smart Paste:** You can paste the full AI response text. The module automatically finds and extracts the JSON code block.
+* **Pathfinder 2e Optimized:** Special logic for spell lists, skills, and equipment (but compatible with most systems).
 
 ## 📦 Installation
 
-1.  Open Foundry VTT -> **Add-on Modules**.
-2.  Click **Install Module**.
-3.  Paste Manifest URL:
+1.  Open Foundry VTT.
+2.  Go to the **Add-on Modules** tab.
+3.  Click **Install Module**.
+4.  Paste the following **Manifest URL** into the field:
     ```
-    https://github.com/PhilsModules/phils-console-doctor/releases/latest/download/module.json
+    https://github.com/PhilsModules/phils-ai-assistant/releases/latest/download/module.json
     ```
-4.  Click **Install**.
+5.  Click **Install**.
 
 ## 📖 How to Use
 
-1.  **Open the Doctor:**
-    *   Click the **Console Doctor** button at the bottom of the **Game Settings** sidebar.
-    *   Or press `Ctrl + Alt + K`.
-2.  **View Errors:** The window shows a live list of warnings (yellow) and errors (red).
-3.  **Analyze:** Click the **Ask AI** button on any entry.
-4.  **Paste & Solve:** The module copies a detailed prompt. Paste it into the AI window that opens to get an immediate fix or explanation.
+### 1. The "Brain Button"
+Once activated, you will find a small 🧠 brain icon on character sheets, items, and journal entries (in the header bar).
+
+### 2. Select Mode
+Click the icon and choose what you want to do:
+* **Chat / Lore:** "How does this spell work?"
+* **Image:** Creates a prompt for Midjourney/DALL-E.
+* **Update:** "Make this dagger magical and add fire damage."
+* **Write Story:** "Write a dramatic intro for this location."
+
+
+### 3. Copy & Paste Workflow
+1.  The module generates an optimized prompt.
+2.  Click **"Copy & Open AI"**.
+3.  Paste the text into Gemini/ChatGPT (CTRL+V).
+4.  **(Update/Story/Translate):**
+    * Copy the **entire response** from the AI.
+    * Click the **"Paste"** button in the Foundry result window.
+    * Click **Apply Changes**.
 
 ---
 
-# 🇩🇪 Deutsche Anleitung
+---
 
-**Phil's Console Doctor** ist dein persönlicher Diagnose-Assistent für Foundry VTT. Er fängt Konsolen-Fehler und Warnungen in Echtzeit ab und lässt dich diese mit einem Klick per KI analysieren.
+## 🌐 Translation Support
 
-Hör auf zu raten, warum dein Spiel laggt oder kaputt ist. Frag den Doktor.
+**Looking for the Translation Feature?**
+The translation functionality has been moved to a standalone module to keep things clean and focused.
+You can find **Phil's Journal Translator** here:
+[https://github.com/PhilsModules/phils-journal-translator](https://github.com/PhilsModules/phils-journal-translator)
+
+---
+
+# 🇩🇪 Deutsche Beschreibung
+
+**Dein kostenloser KI-Begleiter für Foundry VTT.**
+
+Phil's AI Assistant verbindet deine Foundry VTT Welt mit der Power moderner KI (Google Gemini, ChatGPT, Claude, Copilot, Perplexity).
+
+Das Besondere: **Du brauchst keine teuren API-Keys!**
+Das Modul arbeitet als intelligenter "Prompt-Engineer". Es liest die Daten deiner Akteure oder Gegenstände, erstellt den perfekten Befehl (Prompt) für die KI, und du musst ihn nur noch in das Chat-Fenster deiner Lieblings-KI kopieren.
 
 ## 🚀 Funktionen
 
-*   **Echtzeit-Überwachung:** Fängt `console.warn` und `console.error` sofort ab.
-*   **Startup-Schutz (Fast Start):** Startet sofort beim Laden des Skripts, um Fehler zu fangen, die *vor* dem vollständigen Start von Foundry passieren.
-*   **Aggressive Diagnose:**
-    *   Erkennt **unbehandelte Fehler** und **Abstürze**, die sonst lautlos passieren.
-    *   Erkennt **Ladefehler** (kaputte Bilder, Skripte, 404s).
-*   **Multi-KI Support:** Wähle deinen bevorzugten KI-Assistenten in den Einstellungen:
-    *   **Google Gemini** (Standard)
-    *   ChatGPT
-    *   Claude
-    *   Microsoft Copilot
-    *   Perplexity
-*   **Smart Grouping:** Fasst identische Fehler zusammen, um den Log sauber zu halten (z.B. `x5` Badge).
-*   **Module Blame:** Erkennt automatisch, welches Modul einen Fehler verursacht hat und markiert es (z.B. `[Midi QOL]`).
-*   **Smarte Prompts:** Erstellt automatisch einen detaillierten Prompt mit Fehlermeldung, Stack Trace und deiner Modul-Liste.
-*   **Sauberes Design:** Ein schönes, natives "Pergament"-Interface, das perfekt zu Foundry passt.
-*   **Vollständig Lokalisiert:** Interface und KI-Prompts komplett auf **Deutsch** und **Englisch**.
+* **Keine API-Kosten:** Funktioniert mit den kostenlosen Web-Versionen von Gemini, ChatGPT & Co.
+* **Kontext-Bewusst:** Liest automatisch Werte, Beschreibungen und Regeln.
+* **5 Mächtige Modi:**
+    * 💬 **Chat / Lore:** Stelle Fragen zu Regeln oder Hintergrundgeschichten.
+    * 🎨 **Image Prompts:** Erstellt detaillierte Bildbeschreibungen für dein Character-Art.
+    * ✏️ **Werte anpassen:** Lass die KI Werte ändern oder Rechtschreibung korrigieren.
+    * 📖 **Geschichte schreiben:** Lass die KI ganze Journal-Seiten verfassen.
 
-## ⚡ Performance & Sicherheit
+* **Smart Paste:** Du kannst die ganze Antwort der KI einfügen. Das Modul filtert den Code automatisch heraus.
+* **Sicherheit:** Erstellt automatisch ein **Backup** (Kopie) deines Journals, bevor Änderungen angewendet werden.
 
-*   **Nur Client-Seitig:** Das Modul läuft zu 100% lokal in deinem Browser. Es beeinträchtigt weder den Server noch andere Spieler.
-*   **Passiver Zuhörer:** Es "hört" nur auf die Konsole. Es blockiert nichts und fragt nichts aktiv ab.
-*   **Speicher-Sicher:** Es werden nur die letzten 50 Logs gespeichert. Alte Logs werden automatisch gelöscht, um den Speicherverbrauch winzig zu halten.
-*   **Null Last:** Das Fenster verbraucht keine Ressourcen, wenn es geschlossen ist.
+## 📦 Installation
 
-## 📖 Kurzanleitung
+1.  Öffne Foundry VTT.
+2.  Gehe zum Reiter **Add-on Modules**.
+3.  Klicke auf **Install Module**.
+4.  Füge die folgende **Manifest URL** unten ein:
+    ```
+    https://github.com/PhilsModules/phils-ai-assistant/releases/latest/download/module.json
+    ```
+5.  Klicke auf **Install**.
 
-1.  **Doktor rufen:**
-    *   Klicke auf den **Console Doctor** Button ganz unten in den **Spieleinstellungen**.
-    *   Oder drücke `Strg + Alt + K`.
-2.  **Fehler sehen:** Das Fenster zeigt dir live alle Warnungen (gelb) und Fehler (rot).
-3.  **Analysieren:** Klicke auf **KI Fragen** bei einem Eintrag.
-4.  **Lösen:** Das Modul kopiert einen perfekten Prompt. Füge ihn einfach in das sich öffnende KI-Fenster ein, um sofort eine Lösung zu erhalten.
+## 📖 Bedienung
+
+### 1. Der "Brain-Button"
+Nach der Aktivierung findest du in den Charakterbögen, Items und Journalen (oben in der Leiste) ein kleines 🧠 Gehirn-Symbol.
+
+### 2. Workflow
+1.  Klicke auf das Symbol und wähle den Modus.
+2.  Das Modul generiert einen optimierten Prompt -> **"Kopieren & KI öffnen"**.
+3.  Füge den Text bei Gemini/ChatGPT ein.
+4.  Kopiere die Antwort der KI und füge sie im Foundry-Fenster ein -> **Änderungen anwenden**.
+
+---
+
+## ⚙️ Einstellungen & Tipps
+* **Standard KI:** Lege fest, welcher Dienst sich standardmäßig öffnet.
+* **Pathfinder 2e:** Optimierte Logik für Zauberlisten und Skills.
 
 ---
 
@@ -105,6 +129,13 @@ Hör auf zu raten, warum dein Spiel laggt oder kaputt ist. Frag den Doktor.
 
 ## 📄 License
 This module is licensed under the [GPL-3.0 License](LICENSE).
+
+## ❤️ Support the Development
+If you enjoy this module and want to support open-source development for Foundry VTT, check out my Patreon!
+
+Gefällt dir das Modul? Unterstütze die Weiterentwicklung auf Patreon!
+
+[**Become a Patron**](https://www.patreon.com/PhilsModules)
 
 ---
 <div align="center">
