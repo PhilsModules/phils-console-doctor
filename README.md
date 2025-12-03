@@ -53,7 +53,7 @@ Stop guessing why your game is lagging or breaking. Ask the Doctor.
 
 ---
 
-# 🇩🇪 Deutsche Anleitung
+# Deutsche Anleitung
 
 **Phils Console Doctor** ist dein persönlicher Diagnose-Assistent für Foundry VTT. Er fängt Konsolen-Fehler und Warnungen in Echtzeit ab und lässt dich diese mit einem Klick per KI analysieren.
 
