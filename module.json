@@ -1,7 +1,7 @@
 {
   "id": "phils-console-doctor",
   "title": "Phils Console Doctor",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description": "A smart console error tracker that captures logs, groups duplicates, identifies culprit modules, and helps you fix them with AI.",
   "authors": [
     {

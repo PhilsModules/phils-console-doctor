@@ -265,7 +265,7 @@ class PhilsConsoleDoctorApp extends Application {
         const metricsHeader = `
             <div class="pcd-header">
                 <button class="pcd-control-btn" id="pcd-btn-record">
-                    <i class="fas fa-circle"></i> ${game.i18n.localize("PHILSCONSOLEDOCTOR.UI.StartRecording")}
+                    <i class="fas fa-circle" style="color: #ff5555;"></i> ${game.i18n.localize("PHILSCONSOLEDOCTOR.UI.StartRecording")}
                 </button>
                 <button class="pcd-control-btn" id="pcd-btn-stop" style="display:none; color: #ff5555;">
                     <i class="fas fa-stop"></i> ${game.i18n.localize("PHILSCONSOLEDOCTOR.UI.StopRecording")}
@@ -288,32 +288,24 @@ class PhilsConsoleDoctorApp extends Application {
         const metricsBody = `<div class="pcd-metrics-list" id="pcd-metrics-container"></div>`;
 
         const conflictsHeader = `
-            <div class="pcd-header" style="justify-content: space-between;">
-                 <h3 style="margin:0; border:none;"><i class="fas fa-shield-halved"></i> ${game.i18n.localize("PHILSCONSOLEDOCTOR.UI.ConflictsTitle") || "Conflict Detector"}</h3>
-                 <span style="font-size:0.8em; opacity:0.7;">${game.i18n.localize("PHILSCONSOLEDOCTOR.UI.ConflictsDesc") || "Detects blocked actions & interfering modules"}</span>
+            <div class="pcd-header" style="justify-content: space-between; align-items: center;">
+                 <h3 style="margin:0; border:none; flex-grow:1;"><i class="fas fa-shield-halved"></i> ${game.i18n.localize("PHILSCONSOLEDOCTOR.UI.ConflictsTitle") || "Conflict Detector"}</h3>
+                 
+                 <button class="pcd-control-btn" id="pcd-btn-detective-record" style="flex: 0 0 auto; width: auto; font-size: 0.8rem; padding: 2px 8px; line-height: 1.5; border: 1px solid rgba(0,0,0,0.2); ${PCDProfiler.IS_RECORDING ? 'color: #ff5555; border-color: #ff5555;' : ''}">
+                    <i class="fas ${PCDProfiler.IS_RECORDING ? 'fa-stop' : 'fa-circle'}" style="font-size: 0.7rem; vertical-align: middle; ${PCDProfiler.IS_RECORDING ? 'color: inherit;' : 'color: #ff5555;'}"></i> <span style="vertical-align: middle;">${PCDProfiler.IS_RECORDING ? (game.i18n.localize("PHILSCONSOLEDOCTOR.UI.StopDiagnosis") || "Stop Diagnosis") : (game.i18n.localize("PHILSCONSOLEDOCTOR.UI.StartDiagnosis") || "Live Diagnosis")}</span>
+                 </button>
             </div>`;
 
         const conflictsBody = `
             <div id="pcd-conflicts-container" style="padding: 10px; overflow-y: auto; height: 100%;">
                 
-                <!-- Section 0: Semantic Log Scans (Explicit Incompatibilities) - NEW -->
-                <div id="pcd-semantic-conflicts"></div>
+                <!-- Dynamic Content Container -->
+                <div id="pcd-conflicts-list"></div>
 
-                <!-- Section 1: Blocked Actions (Silent Failures) -->
-                <div class="pcd-section-box">
-                    <h4 style="border-bottom:1px solid rgba(0,0,0,0.1); margin-bottom:5px;">
-                        <i class="fas fa-ban" style="color:#ff5555;"></i> ${game.i18n.localize("PHILSCONSOLEDOCTOR.UI.SilentFailures") || "SILENT FAILURES (Blocked Actions)"}
-                    </h4>
-                    <p style="font-style:italic; font-size:0.9em; opacity:0.8; margin-bottom:10px;">
-                        ${game.i18n.localize("PHILSCONSOLEDOCTOR.UI.BlockedActionsDesc") || "These modules explicitly returned 'false' to stop an action. If something isn't working, check here first."}
-                    </p>
-                    <div id="pcd-blocked-log" style="background:rgba(0,0,0,0.05); padding:5px; border-radius:4px; max-height:150px; overflow-y:auto; font-family:monospace;">
-                        <div style="text-align:center; padding:10px; opacity:0.6;">${game.i18n.localize("PHILSCONSOLEDOCTOR.UI.NoBlockedActions") || "No silent failures detected yet."}</div>
-                    </div>
+                <div id="pcd-no-conflicts" style="display:none; text-align:center; padding: 40px; color:#7a7971; font-style:italic;">
+                    <i class="fas fa-check-circle" style="font-size: 3em; color: #2ecc71; margin-bottom: 15px; display: block;"></i>
+                    ${game.i18n.localize("PHILSCONSOLEDOCTOR.UI.NoConflicts") || "All systems operational. No conflicts detected."}
                 </div>
-
-                <!-- Inspector Tree Container -->
-                <div id="pcd-inspector-tree"></div>
 
             </div>`;
 
@@ -383,6 +375,22 @@ class PhilsConsoleDoctorApp extends Application {
             });
         } else {
             this.updateConflictsContent();
+
+            const btnRec = html.find('#pcd-btn-detective-record');
+
+            btnRec.click(ev => {
+                const isRecording = !PCDProfiler.IS_RECORDING;
+                PCDProfiler.toggleRecording(isRecording);
+
+                // Update Button Visuals
+                if (isRecording) {
+                    btnRec.css({ 'color': '#ff5555', 'border-color': '#ff5555' }).html(`<i class="fas fa-stop" style="font-size: 0.7rem;"></i> ${game.i18n.localize("PHILSCONSOLEDOCTOR.UI.StopDiagnosis") || "Stop Diagnosis"}`);
+                    this.updateConflictsContent(); // Refresh to show "Listening..."
+                } else {
+                    btnRec.css({ 'color': '', 'border-color': '' }).html(`<i class="fas fa-circle" style="font-size: 0.7rem; color: #ff5555;"></i> ${game.i18n.localize("PHILSCONSOLEDOCTOR.UI.StartDiagnosis") || "Live Diagnosis"}`);
+                    this.updateConflictsContent(); // Refresh to potentially show new blocks
+                }
+            });
         }
     }
 
@@ -480,143 +488,184 @@ class PhilsConsoleDoctorApp extends Application {
     }
 
     updateConflictsContent() {
-        const blContainer = this.element.find('#pcd-blocked-log');
-        const inspContainer = this.element.find('#pcd-inspector-tree');
+        const listContainer = this.element.find('#pcd-conflicts-list');
+        const noConflictsMsg = this.element.find('#pcd-no-conflicts');
 
-        // 0. Semantic Log Scan (Explicit Incompatibilities) - NEW
+        if (!listContainer.length) return;
+        listContainer.empty();
+        let hasConflicts = false;
+
+        // 0. GATHER DATA
+        // Semantic Log Scan (Explicit Incompatibilities)
         const semanticConflicts = PCDInspector.scanLogs(PCD_CAPTURED_LOGS);
-        const semanticContainer = this.element.find('#pcd-semantic-conflicts');
+
+        // Method Contention (libWrapper + Logs)
+        const methodConflicts = PCDInspector.scanMethods(PCD_CAPTURED_LOGS);
+
+        // Hook Contention (Everything else)
+        const hookReport = PCDInspector.scanHooks();
+
+        // Check if recording is active
+        const isRecording = typeof PCDProfiler !== 'undefined' && PCDProfiler.IS_RECORDING;
+
+        // Blocked Actions (Profiler)
+        let blockedActions = [];
+        if (typeof PCDProfiler !== 'undefined') {
+            blockedActions = PCDProfiler.getBlocks();
+        }
 
         // Helper to render a warning box
-        const renderWarningBox = (container, title, items, icon, color, desc, emptyMsg, advice) => {
-            const box = $(`<div class="pcd-section-box" style="border-left: 3px solid ${color}; margin-top: 10px;">
-                <h5 style="margin:0 0 5px 0; color:${color};"><i class="${icon}"></i> ${title} (${items ? items.length : 0})</h5>
-                ${desc ? `<p style="font-size:0.8em; opacity:0.8; margin-bottom:5px;">${desc}</p>` : ''}
-                ${(items && items.length > 0 && advice) ? `<p style="font-size:0.8em; background:rgba(0,0,0,0.05); padding:4px; border-radius:3px; margin-bottom:5px;">${advice}</p>` : ''}
+        const renderSection = (title, items, icon, color, desc) => {
+            if (!items || items.length === 0) return; // STRICTLY HIDE IF EMPTY
+            hasConflicts = true;
+
+            const box = $(`<div class="pcd-section-box" style="border-left: 4px solid ${color}; margin-top: 10px;">
+                <h5 style="margin:0 0 5px 0; color:${color}; font-size:1.1em;"><i class="${icon}"></i> ${title} (${items.length})</h5>
+                ${desc ? `<p style="font-size:0.9em; opacity:0.8; margin-bottom:8px; line-height:1.3;">${desc}</p>` : ''}
             </div>`);
 
-            if (!items || items.length === 0) {
-                if (emptyMsg) {
-                    box.append($(`<div style="text-align:center; padding:10px; opacity:0.6;">${emptyMsg}</div>`));
-                    container.append(box);
+            const list = $(`<div style="max-height: 250px; overflow-y: auto; padding-right:5px;"></div>`);
+
+            items.forEach(c => {
+                let content = "";
+                // Render Logic based on item type
+                if (c.message) {
+                    // Semantic
+                    content = `
+                        <div class="pcd-conflict-item" style="border-left-color:${color}40;">
+                            <div style="font-weight:bold; color:${color};">${c.module}</div>
+                            <div style="font-size:0.95em;">${c.message}</div>
+                            <div style="font-size:0.8em; opacity:0.6; text-align:right; margin-top:2px;">${c.timestamp}</div>
+                        </div>`;
+                } else if (c.target) {
+                    // Method
+                    const mods = c.modules.map(m => `<span class="pcd-badge module">${m}</span>`).join(" ");
+                    content = `
+                    <div class="pcd-conflict-item" style="border-left-color:${color}40;">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span style="font-family:monospace; font-weight:bold; font-size:1em;">${c.target}</span>
+                            <span class="pcd-badge count" style="background:${color}20; color:${color};">x${c.count}</span>
+                        </div>
+                        <div style="margin-top:4px; font-size:0.9em opacity:0.9;">${mods}</div>
+                    </div>`;
+                } else if (c.hook) {
+                    // Hook
+                    const mods = c.modules.map(m => `<span class="pcd-badge module" style="font-size:0.8em; padding:1px 4px;">${m}</span>`).join(" ");
+                    content = `
+                    <div class="pcd-conflict-item" style="border-left-color:${color}40;">
+                        <div style="display:flex; justify-content:space-between;">
+                            <span style="font-family:monospace; font-weight:bold;">${c.hook}</span>
+                            <span class="pcd-badge count">x${c.count}</span>
+                        </div>
+                        <div style="margin-top:3px; font-size:0.85em; opacity:0.8; line-height:1.4;">${mods}</div>
+                    </div>`;
+                } else if (c.block) {
+                    // Blocked Action
+                    content = `
+                        <div class="pcd-conflict-item" style="border-left-color:${color}40;">
+                            <div><strong style="color:${color};">${c.module}</strong> blockierte <span style="font-family:monospace;">${c.hook}</span></div>
+                            <div style="font-size:0.8em; opacity:0.6;">${c.timestamp}</div>
+                        </div>`;
                 }
-            } else {
-                items.forEach(c => {
-                    // check if item is a semantic conflict (msg + module) or hook conflict (hook + modules array)
-                    const isSemantic = c.message !== undefined;
-                    let content = "";
 
-                    if (isSemantic) {
-                        content = `
-                            <div style="margin-bottom:4px; font-size:0.9em;">
-                                <strong style="color:${color}">${c.module}</strong>: ${c.message}
-                                <br><span style="opacity:0.6; font-size:0.8em;">${c.timestamp}</span>
-                            </div>`;
-                    } else {
-                        const modulesList = c.modules.map(m => `<span class="pcd-badge module" style="font-size:0.8em;">${m}</span>`).join(" ");
-                        content = `
-                            <div style="margin-bottom:4px; font-size:0.9em;">
-                                <span style="font-weight:bold; font-family:monospace;">${c.hook}</span> 
-                                <br>${modulesList}
-                            </div>`;
-                    }
-
-                    box.append($(content));
-                });
-                container.append(box);
-            }
+                list.append(content);
+            });
+            box.append(list);
+            listContainer.append(box);
         };
 
-        // Render Semantic Conflicts
-        if (semanticContainer.length) {
-            semanticContainer.empty();
-            renderWarningBox(
-                semanticContainer,
-                game.i18n.localize("PHILSCONSOLEDOCTOR.UI.ExplicitIncompatibility") || "Explicit Incompatibility",
-                semanticConflicts,
-                "fas fa-bomb",
-                "#ff0000",
-                game.i18n.localize("PHILSCONSOLEDOCTOR.UI.ExplicitIncompatibilityDesc"),
-                game.i18n.localize("PHILSCONSOLEDOCTOR.UI.NoExplicitConflicts")
-            );
-        }
+        // 1. RENDER EXPLICIT INCOMPATIBILITIES (Priority #1 - Red)
+        renderSection(
+            game.i18n.localize("PHILSCONSOLEDOCTOR.UI.ExplicitIncompatibility") || "Explizite Inkompatibilitäten",
+            semanticConflicts,
+            "fas fa-bomb",
+            "#ff3333", // Red
+            game.i18n.localize("PHILSCONSOLEDOCTOR.UI.ExplicitIncompatibilityDesc") || "Diese Module haben bekannte Konflikte gemeldet."
+        );
 
-        if (typeof PCDProfiler !== 'undefined') {
-            const blocks = PCDProfiler.getBlocks();
-            if (blocks.length > 0) {
-                blContainer.empty();
-                blocks.forEach(b => {
-                    blContainer.append($(`
-                        <div style="padding:4px; border-bottom:1px solid #ddd; font-size:0.9em; display:flex; justify-content:space-between;">
-                            <span><strong style="color:#d93131;">${b.module}</strong> blocked <span style="font-family:monospace; background:#eee; padding:0 3px;">${b.hook}</span></span>
-                            <span style="opacity:0.6; font-size:0.8em;">${b.timestamp}</span>
-                        </div>
-                    `));
-                });
+        // 2. RENDER METHOD CONFLICTS (Priority #2 - Purple)
+        renderSection(
+            game.i18n.localize("PHILSCONSOLEDOCTOR.UI.MethodContention") || "Methoden-Konflikte (Logic & System)",
+            methodConflicts,
+            "fas fa-gears",
+            "#9b59b6", // Purple
+            game.i18n.localize("PHILSCONSOLEDOCTOR.UI.MethodContentionDesc") || "Kritisch: Mehrere Module überschreiben dieselbe Kernfunktion."
+        );
+
+        // 3. RENDER HOOK CONFLICTS (Priority #3 - Categories)
+        renderSection(
+            game.i18n.localize("PHILSCONSOLEDOCTOR.UI.ConflictCategory.UI") || "UI & Interface Contention",
+            hookReport.contested['UI & Interface'],
+            "fas fa-palette",
+            "#f39c12",
+            game.i18n.localize("PHILSCONSOLEDOCTOR.UI.ConflictCategory.UIDesc") || "Modules modifying the same UI elements."
+        );
+
+        renderSection(
+            game.i18n.localize("PHILSCONSOLEDOCTOR.UI.ConflictCategory.Actor") || "Actor & Item Conflicts",
+            hookReport.contested['Actors & Items'],
+            "fas fa-user-shield",
+            "#3498db",
+            game.i18n.localize("PHILSCONSOLEDOCTOR.UI.ConflictCategory.ActorDesc") || "Conflicts during Actor/Item updates."
+        );
+
+        renderSection(
+            game.i18n.localize("PHILSCONSOLEDOCTOR.UI.ConflictCategory.Scene") || "Scene & Map Conflicts",
+            hookReport.contested['Scene & Map'],
+            "fas fa-map",
+            "#2ecc71",
+            game.i18n.localize("PHILSCONSOLEDOCTOR.UI.ConflictCategory.SceneDesc") || "Conflicts during Scene/Token updates."
+        );
+
+        const otherConflicts = hookReport.contested['Other'].concat(hookReport.contested['System & Logic']);
+        renderSection(
+            game.i18n.localize("PHILSCONSOLEDOCTOR.UI.ConflictCategory.Other") || "Other Conflicts",
+            otherConflicts,
+            "fas fa-random",
+            "#95a5a6",
+            game.i18n.localize("PHILSCONSOLEDOCTOR.UI.ConflictCategory.OtherDesc") || "Various other hook conflicts."
+        );
+
+        // 4. RENDER BLOCKED ACTIONS (Priority #4 - Grey)
+        // Transform block data to match general structure
+        const formattedBlocks = blockedActions.map(b => ({
+            block: true,
+            module: b.module,
+            hook: b.hook,
+            timestamp: b.timestamp
+        }));
+
+        renderSection(
+            game.i18n.localize("PHILSCONSOLEDOCTOR.UI.SilentFailures") || "STILLE FEHLER (Blockierte Aktionen)",
+            formattedBlocks,
+            "fas fa-ban",
+            "#7f8c8d", // Grey
+            game.i18n.localize("PHILSCONSOLEDOCTOR.UI.BlockedActionsDesc") || "Diese Module haben eine Aktion mit 'return false' verhindert."
+        );
+
+        // 5. EMPTY STATE
+        // 5. EMPTY STATE / RECORDING STATE
+        if (!hasConflicts) {
+            if (isRecording) {
+                noConflictsMsg.html(`
+                    <i class="fas fa-heartbeat fa-pulse" style="font-size: 3em; color: #e74c3c; margin-bottom: 15px; display: block;"></i>
+                    <div style="font-weight:bold; margin-bottom:5px;">${game.i18n.localize("PHILSCONSOLEDOCTOR.UI.Diagnosing") || "Diagnosing Silent Failures..."}</div>
+                    <div style="font-size:0.8em; opacity:0.7;">${game.i18n.localize("PHILSCONSOLEDOCTOR.UI.PerformActions") || "Perform the action that is failing (e.g. roll a dice, open a sheet)."}</div>
+                `).show();
             } else {
-                blContainer.html(`<div style="text-align:center; padding:10px; opacity:0.6;">${game.i18n.localize("PHILSCONSOLEDOCTOR.UI.NoBlockedActions")}</div>`);
+                noConflictsMsg.html(`
+                    <i class="fas fa-check-circle" style="font-size: 3em; color: #2ecc71; margin-bottom: 15px; display: block;"></i>
+                    ${game.i18n.localize("PHILSCONSOLEDOCTOR.UI.NoConflicts") || "All systems operational. No conflicts detected."}
+                `).show();
             }
-        }
-
-        if (typeof PCDInspector !== 'undefined') {
-            const report = PCDInspector.scanHooks();
-            inspContainer.empty();
-
-            // 1. Critical Conflicts (pre*)
-            renderWarningBox(
-                inspContainer,
-                game.i18n.localize("PHILSCONSOLEDOCTOR.UI.ConflictsTitle") || "Critical Conflicts",
-                report.conflicts,
-                "fas fa-triangle-exclamation",
-                "#d93131",
-                game.i18n.localize("PHILSCONSOLEDOCTOR.UI.ConflictsDesc"),
-                game.i18n.localize("PHILSCONSOLEDOCTOR.UI.NoCriticalConflicts") || "No critical conflicts detected."
-            );
-
-            // 2. UI Contention
-            renderWarningBox(
-                inspContainer,
-                game.i18n.localize("PHILSCONSOLEDOCTOR.UI.TitleUI") || "UI Contention",
-                report.uiConflicts,
-                "fas fa-palette",
-                "#ffaa00",
-                game.i18n.localize("PHILSCONSOLEDOCTOR.UI.DescUI"),
-                game.i18n.localize("PHILSCONSOLEDOCTOR.UI.NoUIConflicts"),
-                game.i18n.localize("PHILSCONSOLEDOCTOR.UI.AdviceUI")
-            );
-
-            // 3. Environment Contention
-            renderWarningBox(
-                inspContainer,
-                game.i18n.localize("PHILSCONSOLEDOCTOR.UI.TitleEnv") || "Scene & Environment",
-                report.envConflicts,
-                "fas fa-cloud-bolt",
-                "#3a86ff",
-                game.i18n.localize("PHILSCONSOLEDOCTOR.UI.DescEnv"),
-                game.i18n.localize("PHILSCONSOLEDOCTOR.UI.NoEnvConflicts"),
-                game.i18n.localize("PHILSCONSOLEDOCTOR.UI.AdviceEnv")
-            );
-
-            // 5. Inspector Tree (All Categories)
-            for (const [catName, hooks] of Object.entries(report.categories)) {
-                if (hooks.length === 0) continue;
-                const group = $(`<details ${hooks.length < 5 ? 'open' : ''} style="margin-bottom:5px; background:rgba(0,0,0,0.03); border-radius:4px; padding:5px;">
-                    <summary style="cursor:pointer; font-weight:bold; padding:2px;">${catName} (${hooks.length})</summary>
-                    <div style="padding:5px 0 5px 10px;"></div>
-                </details>`);
-                const list = group.find('div');
-                hooks.sort((a, b) => a.hook.localeCompare(b.hook)).forEach(h => {
-                    const tooltip = h.modules.join(", ");
-                    const isContested = h.count > 1;
-                    list.append($(`
-                        <div style="font-size:0.85em; margin-bottom:2px; display:flex; justify-content:space-between; ${isContested ? 'background:rgba(255, 170, 0, 0.1);' : ''}">
-                            <span style="font-family:monospace;" title="${tooltip}">${h.hook}</span>
-                            <span class="pcd-badge count" style="font-size:0.7em;">${h.count}</span>
-                        </div>
-                    `));
-                });
-                inspContainer.append(group);
+        } else {
+            if (isRecording) {
+                // Prepend a small recording indicator if conflicts exist
+                listContainer.prepend($(`<div style="background:rgba(231, 76, 60, 0.1); color:#c0392b; padding:8px; text-align:center; border-radius:4px; margin-bottom:10px; font-size:0.9em;">
+                    <i class="fas fa-circle fa-beat" style="font-size:0.8em; margin-right:5px;"></i> ${game.i18n.localize("PHILSCONSOLEDOCTOR.UI.DiagnosisRunning") || "Live Diagnosis Running..."}
+                 </div>`));
             }
+            noConflictsMsg.hide();
         }
     }
 

@@ -1,11 +1,18 @@
+# Phil's Console Doctor 🏥
+
 ![Foundry v13 Compatible](https://img.shields.io/badge/Foundry-v13-brightgreen)
 ![Foundry v12 Compatible](https://img.shields.io/badge/Foundry-v12-green)
 ![License](https://img.shields.io/badge/License-GPLv3-blue)
-![Version](https://img.shields.io/badge/Version-1.2.3-orange)
-
+![Version](https://img.shields.io/badge/Version-1.2.4-orange)
 
 <a href="Updates.md"><img src="https://img.shields.io/badge/CHECK-Changelog-blue" style="height: 25px;"></a>
 <a href="https://www.patreon.com/PhilsModules"><img src="https://img.shields.io/badge/SUPPORT-Patreon-ff424d?logo=patreon" style="height: 25px;"></a>
+
+> [!WARNING]
+> **Testing / Testen**
+> It is very difficult to fully test this module if you don't have any errors in your world. If you encounter issues, or if errors/conflicts are not being displayed despite existing, please let me know! Detecting every possible weird module interaction is hard, so I appreciate your feedback if something is missing or broken.
+>
+> Es ist sehr schwer, dieses Modul vollständig zu testen, wenn man keine Fehler in seiner Welt hat. Falls ihr Probleme habt oder Fehler/Konflikte nicht angezeigt werden, obwohl sie da sein sollten, schreibt mich bitte an! Jedes seltsame Modul-Verhalten abzufangen ist schwierig, daher bin ich auf euer Feedback angewiesen, falls etwas fehlt oder kaputt ist.
 
 **Phil's Console Doctor** is your personal diagnostic assistant for Foundry VTT. It captures console errors and warnings in real-time and lets you analyze them with AI with a single click.
 
@@ -30,6 +37,11 @@ Stop guessing why your game is lagging or breaking. Ask the Doctor.
 *   **Clean UI:** A beautiful, native "Parchment" interface that fits perfectly into Foundry VTT.
 *   **Fully Localized:** Interface and AI prompts available in **English** and **German**.
 
+## 🛡️ Smart Conflict Detector (New in v1.2)
+*   **Explicit Incompatibility:** Detects when modules declare themselves incompatible in the console (e.g., "Module X uses a library incompatible with Module Y").
+*   **Silent Failures:** Identifies actions that were silently blocked by a module (returning `false` in a `pre` hook) without throwing an error.
+*   **Hook Inspector:** Visualizes which modules are fighting over the same game logic (e.g., Movement, Lighting, UI) and warns you about potential conflicts.
+
 ## ⚡ Performance & Safety
 
 *   **Client-Side Only:** The module runs 100% locally in your browser. It does not affect the server or other players.
@@ -44,29 +56,6 @@ Stop guessing why your game is lagging or breaking. Ask the Doctor.
 3.  Paste Manifest URL:
     ```
     https://github.com/PhilsModules/phils-console-doctor/releases/latest/download/module.json
-    ```
-4.  Click **Install**.
-
-## 📖 How to Use
-
-1.  **Open the Doctor:**
-    *   Click the **Console Doctor** button at the bottom of the **Game Settings** sidebar.
-    *   Or press `Ctrl + Alt + K`.
-2.  **View Errors:** The window shows a live list of warnings (yellow) and errors (red).
-3.  **Analyze:** Click the **Ask AI** button on any entry.
-4.  **Paste & Solve:** The module copies a detailed prompt. Paste it into the AI window that opens to get an immediate fix or explanation.
-
----
-
-# 🇩🇪 Deutsche Anleitung
-
-**Phil's Console Doctor** ist dein persönlicher Diagnose-Assistent für Foundry VTT. Er fängt Konsolen-Fehler und Warnungen in Echtzeit ab und lässt dich diese mit einem Klick per KI analysieren.
-
-Hör auf zu raten, warum dein Spiel laggt oder kaputt ist. Frag den Doktor.
-
-## 🚀 Funktionen
-
-*   **Echtzeit-Überwachung:** Fängt `console.warn` und `console.error` sofort ab.
 *   **Startup-Schutz (Fast Start):** Startet sofort beim Laden des Skripts, um Fehler zu fangen, die *vor* dem vollständigen Start von Foundry passieren.
 *   **Aggressive Diagnose:**
     *   Erkennt **unbehandelte Fehler** und **Abstürze**, die sonst lautlos passieren.
@@ -82,6 +71,11 @@ Hör auf zu raten, warum dein Spiel laggt oder kaputt ist. Frag den Doktor.
 *   **Smarte Prompts:** Erstellt automatisch einen detaillierten Prompt mit Fehlermeldung, Stack Trace und deiner Modul-Liste.
 *   **Sauberes Design:** Ein schönes, natives "Pergament"-Interface, das perfekt zu Foundry passt.
 *   **Vollständig Lokalisiert:** Interface und KI-Prompts komplett auf **Deutsch** und **Englisch**.
+
+## 🛡️ Smart Conflict Detector (Neu in v1.2)
+*   **Explizite Inkompatibilitäten:** Erkennt, wenn Module sich selbst als inkompatibel melden (z.B. "Modul X beißt sich mit Y").
+*   **Stille Fehler:** Findet Aktionen, die heimlich von einem Modul blockiert wurden, ohne einen Fehler zu werfen.
+*   **Hook Inspector:** Visualisiert, welche Module um die gleiche Logik kämpfen (z.B. Bewegung, Licht, UI) und warnt vor Konflikten.
 
 ## ⚡ Performance & Sicherheit
 
@@ -117,4 +111,3 @@ This module is licensed under the [GPL-3.0 License](LICENSE).
     </a>
     <p>Made with ❤️ for the Foundry VTT Community</p>
 </div>
-

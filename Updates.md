@@ -1,6 +1,16 @@
 # Update Log
 
-## Version 1.2.3
+## Version 1.2.4
+*   **New Feature:** Added 'Live Diagnosis' button to Conflict Detective.
+    *   Allows manually starting/stopping recording to catch silent failures.
+    *   Visual indicator (Red Circle/Black Square) for recording state.
+*   **Localization:** Added German translation for all new UI elements and inspector warnings.
+*   **Improvement:** Enhanced conflict category warnings ("UI", "Actor", "Scene", "Method").
+
+
+## Version 1.2.4
+*   **Refinement:** Explicit Incompatibility Scan now ignores "deprecated" warnings to avoid false positives.
+
 *   **Smart Conflict Analysis:** The Detective now scans logs for explicit incompatibility warnings (e.g., "Incompatible with module X").
 *   **Silent Failures:** "Blocked Actions" has been renamed to "Silent Failures" to better explain that suppressed actions are listed here.
 *   **Advice:** Added advice text for UI and Environment conflicts.
