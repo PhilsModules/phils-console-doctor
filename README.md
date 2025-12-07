@@ -9,7 +9,6 @@
 <a href="https://www.patreon.com/PhilsModules"><img src="https://img.shields.io/badge/SUPPORT-Patreon-ff424d?logo=patreon" style="height: 25px;"></a>
 
 > [!WARNING]
-> **Testing / Testen**
 > It is very difficult to fully test this module if you don't have any errors in your world. If you encounter issues, or if errors/conflicts are not being displayed despite existing, please let me know! Detecting every possible weird module interaction is hard, so I appreciate your feedback if something is missing or broken.
 >
 > Es ist sehr schwer, dieses Modul vollständig zu testen, wenn man keine Fehler in seiner Welt hat. Falls ihr Probleme habt oder Fehler/Konflikte nicht angezeigt werden, obwohl sie da sein sollten, schreibt mich bitte an! Jedes seltsame Modul-Verhalten abzufangen ist schwierig, daher bin ich auf euer Feedback angewiesen, falls etwas fehlt oder kaputt ist.
@@ -111,3 +110,4 @@ This module is licensed under the [GPL-3.0 License](LICENSE).
     </a>
     <p>Made with ❤️ for the Foundry VTT Community</p>
 </div>
+
