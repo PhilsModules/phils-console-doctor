@@ -47,6 +47,11 @@ Phil's Console Doctor überwacht deine Konsole in Echtzeit auf Fehler und Warnun
 * **Stille Fehler:** Findet Aktionen, die heimlich von einem Modul blockiert wurden.
 * **Hook Inspector:** Visualisiert, welche Module um die gleiche Logik kämpfen (z.B. Bewegung, Licht).
 
+## ⚡ Performance Monitor (Neu in v1.3)
+* **Lag-Killer:** Identifiziert sofort, welches Modul dein Spiel verlangsamt.
+* **Detaillierte Analyse:** Zeigt exakt an, wie viele Millisekunden jedes Modul für Hooks, Rendering oder Canvas-Updates benötigt.
+* **Hintergrund-Check:** Überwacht auch unsichtbare Prozesse, die im Hintergrund laufen.
+
 ## 📦 Installation
 
 1.  Öffne Foundry VTT.
@@ -86,6 +91,11 @@ Phil's Console Doctor is your personal diagnostic assistant for Foundry VTT. It 
 * **Explicit Incompatibility:** Detects when modules declare themselves incompatible.
 * **Silent Failures:** Identifies actions that were silently blocked by a module without throwing an error.
 * **Hook Inspector:** Visualizes which modules are fighting over the same game logic (e.g., Movement, Lighting).
+
+## ⚡ Performance Monitor (New in v1.3)
+* **Lag Killer:** Instantly identifies which module is slowing down your game.
+* **Detailed Analysis:** Shows exactly how many milliseconds each module takes for hooks, rendering, or canvas updates.
+* **Background Check:** Monitors invisible processes running in the background.
 
 ## 📦 Installation
 
