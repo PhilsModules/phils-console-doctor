@@ -5,7 +5,7 @@
 ![Foundry v13 Compatible](https://img.shields.io/badge/Foundry-v13-brightgreen)
 ![Foundry v12 Compatible](https://img.shields.io/badge/Foundry-v12-green)
 ![License](https://img.shields.io/badge/License-GPLv3-blue)
-[![Version](https://img.shields.io/badge/Version-1.3.0-orange)](https://github.com/PhilsModules/phils-console-doctor/releases)
+[![Version](https://img.shields.io/badge/Version-1.4.0-orange)](https://github.com/PhilsModules/phils-console-doctor/releases)
 [![Patreon](https://img.shields.io/badge/SUPPORT-Patreon-ff424d?logo=patreon)](https://www.patreon.com/PhilsModules)
 
 <br>
@@ -49,6 +49,7 @@ Phil's Console Doctor überwacht deine Konsole in Echtzeit auf Fehler und Warnun
 
 ## ⚡ Performance Monitor (Neu in v1.3)
 * **Lag-Killer:** Identifiziert sofort, welches Modul dein Spiel verlangsamt.
+* **System Monitor (NEU):** Zeigt jetzt FPS, Netzwerk-Latenz (Ping) und Render-Zeiten an, um "Idle"-Prozesse zu überwachen.
 * **Detaillierte Analyse:** Zeigt exakt an, wie viele Millisekunden jedes Modul für Hooks, Rendering oder Canvas-Updates benötigt.
 * **Hintergrund-Check:** Überwacht auch unsichtbare Prozesse, die im Hintergrund laufen.
 

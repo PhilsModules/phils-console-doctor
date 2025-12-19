@@ -69,11 +69,18 @@ export class PCDInspector {
 
     static _identifyListeners(listeners) {
         return listeners.map(fn => {
-            if (fn._pcdWrapped && fn.module) return fn.module;
+            // 1. Check for PCD Patcher Tag (Gold Standard)
+            if (fn._pcdModule) return fn._pcdModule;
+
+            // 2. Check for Wrapper/LibWrapper Tag
+            if (fn.module) return fn.module; // Some libs attach this
+            if (fn._libWrapper && fn._libWrapper.module) return fn._libWrapper.module;
+
+            // 3. Last Resort: Source Parsing (Legacy Fallback for unpatched items)
             const fnStr = fn.toString();
-            // Try to match standard module identifiers or comments
             const match = fnStr.match(/modules\/([^\/]+)\//);
             if (match) return match[1];
+
             return "Unknown/System";
         });
     }
@@ -196,6 +203,7 @@ export class PCDInspector {
     }
 
     static getModuleFromFunction(fn) {
+        if (fn._pcdModuleId) return fn._pcdModuleId;
         if (fn._libWrapper && fn._libWrapper.module) return fn._libWrapper.module;
         if (fn.moduleId) return fn.moduleId;
 

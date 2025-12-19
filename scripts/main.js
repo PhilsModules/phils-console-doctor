@@ -1,131 +1,101 @@
 /**
  * PHILS CONSOLE DOCTOR
- * Version: 1.2.2
+ * Version: 1.4.0 (System Monitor & Refactor)
  */
 
 const MODULE_ID = 'phils-console-doctor';
 import { PCDProfiler } from './profiler.js';
 import { PCDInspector } from './inspector.js';
+import { PCDPatcher } from './patcher.js';
 
 const PCD_CAPTURED_LOGS = [];
-const PCD_ORIGINAL_CONSOLE = { warn: console.warn, error: console.error };
 
-// --- CONSOLE PATCH ---
-// --- CONSOLE PATCH ---
-function pcdPatchConsole() {
-    if (window.pcdPatched) return;
-    window.pcdPatched = true;
+// --- UTILS: FUZZY MATCHING (Levenshtein) ---
+function getLevenshteinDistance(a, b) {
+    if (a.length === 0) return b.length;
+    if (b.length === 0) return a.length;
+    const matrix = [];
+    for (let i = 0; i <= b.length; i++) matrix[i] = [i];
+    for (let j = 0; j <= a.length; j++) matrix[0][j] = j;
+    for (let i = 1; i <= b.length; i++) {
+        for (let j = 1; j <= a.length; j++) {
+            if (b.charAt(i - 1) == a.charAt(j - 1)) matrix[i][j] = matrix[i - 1][j - 1];
+            else matrix[i][j] = Math.min(matrix[i - 1][j - 1] + 1, Math.min(matrix[i][j - 1] + 1, matrix[i - 1][j] + 1));
+        }
+    }
+    return matrix[b.length][a.length];
+}
 
-    function capture(type, args) {
-        // Serialization
-        const msg = args.map(a => {
-            if (a instanceof Error) return a.message;
-            if (a instanceof Event) {
-                if (a.target && (a.target.src || a.target.href)) {
-                    return `Resource failed to load: ${a.target.src || a.target.href}`;
-                }
-                return `[Event] ${a.type}`;
-            }
-            if (typeof a === 'object') {
-                try { return JSON.stringify(a, null, 2); } catch { return '[Circular Object]'; }
-            }
-            return String(a);
-        }).join(" ");
+function isSimilar(msg1, msg2) {
+    if (Math.abs(msg1.length - msg2.length) > 50) return false; // Too different in length
+    if (msg1 === msg2) return true;
 
-        if (!msg || msg === "{}" || !msg.trim()) return;
+    // Quick check for numbers (often the only difference)
+    const s1 = msg1.replace(/\d/g, '#');
+    const s2 = msg2.replace(/\d/g, '#');
+    if (s1 === s2) return true;
 
-        const stack = (args[0] instanceof Error) ? args[0].stack : new Error().stack;
+    // Expensive Levenshtein for short strings, skip for long ones
+    if (msg1.length < 100) {
+        const dist = getLevenshteinDistance(msg1, msg2);
+        return dist < (msg1.length * 0.2); // 20% difference allowed
+    }
+    return false;
+}
 
-        // Deduping
-        if (PCD_CAPTURED_LOGS.length > 0) {
-            const lastEntry = PCD_CAPTURED_LOGS[0];
-            if (lastEntry.message === msg && lastEntry.type === type) {
-                lastEntry.count = (lastEntry.count || 1) + 1;
-                lastEntry.timestamp = new Date().toLocaleTimeString();
-                ui.philsConsoleDoctor?.rendered && ui.philsConsoleDoctor.updateListContent();
+// --- LOG HANDLER ---
+function handleConsoleLog(type, message, stack, sourceModule) {
+    // 1. DEDUPLICATION (Exact Match & Fuzzy Match)
+    if (PCD_CAPTURED_LOGS.length > 0) {
+        // Check last 5 logs for similarity to group bursts
+        const recentLogs = PCD_CAPTURED_LOGS.slice(0, 5);
+        for (const log of recentLogs) {
+            if (log.type === type && isSimilar(log.message, message)) {
+                log.count = (log.count || 1) + 1;
+                log.timestamp = new Date().toLocaleTimeString();
+                log.similar = true; // Mark as having variations
+                updateUI();
                 return;
             }
         }
-
-        // Module Detection
-        let sourceModule = null;
-        if (stack) {
-            const match = stack.match(/modules\/([^\/]+)\//);
-            if (match && match[1] && match[1] !== MODULE_ID) {
-                const moduleId = match[1];
-                const module = game.modules?.get(moduleId);
-                sourceModule = { id: moduleId, title: module?.title || moduleId };
-            }
-        }
-
-        PCD_CAPTURED_LOGS.unshift({
-            id: Date.now(),
-            timestamp: new Date().toLocaleTimeString(),
-            type,
-            message: msg,
-            stack,
-            count: 1,
-            sourceModule
-        });
-
-        let max = 50;
-        try {
-            max = game.settings?.get(MODULE_ID, 'maxLogs') ?? 50;
-        } catch (e) {
-            // Setting not yet registered, use default
-        }
-        if (PCD_CAPTURED_LOGS.length > max) PCD_CAPTURED_LOGS.pop();
-
-        if (ui.philsConsoleDoctor?.rendered) {
-            clearTimeout(ui.philsConsoleDoctor._updateTimeout);
-            ui.philsConsoleDoctor._updateTimeout = setTimeout(() => ui.philsConsoleDoctor.updateListContent(), 100);
-        }
     }
 
-    // Overrides
-    console.warn = (...args) => { PCD_ORIGINAL_CONSOLE.warn.apply(console, args); capture('warn', args); };
-    console.error = (...args) => { PCD_ORIGINAL_CONSOLE.error.apply(console, args); capture('error', args); };
+    // 2. NEW ENTRY
+    PCD_CAPTURED_LOGS.unshift({
+        id: Date.now(),
+        timestamp: new Date().toLocaleTimeString(),
+        type,
+        message,
+        stack,
+        count: 1,
+        sourceModule
+    });
 
-    // Global Error Listeners
-    window.addEventListener('error', (e) => {
-        if (e instanceof Event && (e.target.src || e.target.href)) capture('error', [e]);
-        else capture('error', [`[Uncaught Exception] ${e.message}`, e.error]);
-    }, true);
+    // 3. PRUNE
+    let max = 50;
+    try {
+        max = game.settings.get(MODULE_ID, 'maxLogs');
+    } catch (e) { /* Settings not yet initialized */ }
 
-    window.addEventListener('unhandledrejection', (e) => capture('error', [`[Unhandled Promise Rejection] ${e.reason}`]));
+    if (PCD_CAPTURED_LOGS.length > max) PCD_CAPTURED_LOGS.length = max;
 
-    // Network Interceptors
-    const originalFetch = window.fetch;
-    window.fetch = async (...args) => {
-        try {
-            const response = await originalFetch(...args);
-            if (!response.ok) capture('error', [`[Network Error] Fetch failed: ${response.status} ${response.statusText} (${args[0]})`]);
-            return response;
-        } catch (err) {
-            capture('error', [`[Network Error] Fetch exception: ${err.message} (${args[0]})`]);
-            throw err;
-        }
-    };
-
-    const originalXhrOpen = XMLHttpRequest.prototype.open;
-    const originalXhrSend = XMLHttpRequest.prototype.send;
-
-    XMLHttpRequest.prototype.open = function (method, url) {
-        this._pcdUrl = url;
-        this._pcdMethod = method;
-        return originalXhrOpen.apply(this, arguments);
-    };
-
-    XMLHttpRequest.prototype.send = function () {
-        this.addEventListener('error', () => capture('error', [`[Network Error] XHR failed: ${this._pcdMethod} ${this._pcdUrl}`]));
-        return originalXhrSend.apply(this, arguments);
-    };
-
-    console.log("🏥 Phils Console Doctor active.");
+    updateUI();
 }
 
-pcdPatchConsole();
-console.log("PCD: Module script loaded.");
+let _uiUpdateTimeout;
+function updateUI() {
+    if (ui.philsConsoleDoctor?.rendered) {
+        clearTimeout(_uiUpdateTimeout);
+        _uiUpdateTimeout = setTimeout(() => ui.philsConsoleDoctor.updateListContent(), 100);
+    }
+}
+
+// --- INITIALIZATION ---
+// Initialize Patcher immediately
+PCDPatcher.setLogHandler(handleConsoleLog);
+PCDProfiler.init(); // This also Inits Patcher
+
+console.log("🏥 Phils Console Doctor active (Refactored Core).");
 
 Hooks.once('init', () => {
     console.log("PCD: Init hook fired.");
@@ -147,7 +117,7 @@ Hooks.once('init', () => {
 
     game.keybindings.register(MODULE_ID, "openConsoleDoctor", {
         name: "Open Console Doctor",
-        editable: [{ key: "KeyK", modifiers: [KeyboardManager.MODIFIER_KEYS.CONTROL, KeyboardManager.MODIFIER_KEYS.ALT] }],
+        editable: [{ key: "KeyK", modifiers: ["Control", "Alt"] }],
         onDown: () => { openDoctorWindow(); return true; }
     });
 });
@@ -166,10 +136,8 @@ Hooks.on('renderSettings', (app, html) => {
     $(element).append(btn);
 });
 
+// --- APPLICATION V2 ---
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
-
-// Use global module state if needed, but V2 suggests keeping state in the app or settings
-// We will keep PCD_CAPTURED_LOGS global as it's the "backend" data
 
 class PhilsConsoleDoctorApp extends HandlebarsApplicationMixin(ApplicationV2) {
     constructor() {
@@ -188,10 +156,10 @@ class PhilsConsoleDoctorApp extends HandlebarsApplicationMixin(ApplicationV2) {
         tag: "form",
         id: "phils-console-doctor-app",
         window: {
-            title: "Console Doctor", // Will be localized if key exists or passed directly
+            title: "Console Doctor",
             icon: "fas fa-stethoscope",
             resizable: true,
-            contentClasses: ["phils-console-doctor-window"] // Keep class for CSS compatibility
+            contentClasses: ["phils-console-doctor-window"]
         },
         position: {
             width: 700,
@@ -232,8 +200,6 @@ class PhilsConsoleDoctorApp extends HandlebarsApplicationMixin(ApplicationV2) {
         // --- CONSOLE CONTEXT ---
         if (this.activeTab === 'console') {
             context.filters = this.filters;
-
-            // Filter Logs
             context.logs = PCD_CAPTURED_LOGS.filter(l => {
                 if (!this.filters[l.type]) return false;
                 if (this.searchQuery) {
@@ -250,27 +216,20 @@ class PhilsConsoleDoctorApp extends HandlebarsApplicationMixin(ApplicationV2) {
                 context.profilerError = true;
             } else {
                 let data = PCDProfiler.getResults();
-                // console.log("PCD Metrics Data:", data);
                 data = data.map(d => ({ ...d, avg: d.count > 0 ? (d.totalTime / d.count) : 0 }));
-
-                // Sort
                 data.sort((a, b) => {
                     let valA = a[this.metricsSort];
                     let valB = b[this.metricsSort];
                     if (typeof valA === 'string') { valA = valA.toLowerCase(); valB = valB.toLowerCase(); }
-
                     if (valA < valB) return this.metricsSortDesc ? 1 : -1;
                     if (valA > valB) return this.metricsSortDesc ? -1 : 1;
                     return 0;
                 });
-
-                // Style Classes
                 data.forEach(d => {
                     if (d.totalTime > 500) d.rowClass = "high-impact";
                     else if (d.totalTime > 100) d.rowClass = "med-impact";
                     else d.rowClass = "";
                 });
-
                 context.metrics = data;
             }
         }
@@ -285,44 +244,57 @@ class PhilsConsoleDoctorApp extends HandlebarsApplicationMixin(ApplicationV2) {
         return context;
     }
 
-    /* --- CONFLICTS HELPER --- */
     _prepareConflictBoxes() {
-        const boxes = [];
-
-        // 0. DATA
+        // Reuse existing logic, now powered by better data
         const semanticConflicts = PCDInspector.scanLogs(PCD_CAPTURED_LOGS);
         const methodConflicts = PCDInspector.scanMethods(PCD_CAPTURED_LOGS);
         const hookReport = PCDInspector.scanHooks();
-        let blockedActions = [];
-        if (typeof PCDProfiler !== 'undefined') blockedActions = PCDProfiler.getBlocks();
+        const blockedActions = PCDProfiler.getBlocks();
+
+        const boxes = [];
 
         // 1. EXPLICIT
         if (semanticConflicts.length > 0) {
             boxes.push({
-                title: game.i18n.localize("PHILSCONSOLEDOCTOR.UI.ExplicitIncompatibility") || "Explizite Inkompatibilitäten",
+                title: game.i18n.localize("PHILSCONSOLEDOCTOR.UI.ExplicitIncompatibility") || "Explicit Incompatibility",
                 desc: game.i18n.localize("PHILSCONSOLEDOCTOR.UI.ExplicitIncompatibilityDesc"),
                 icon: "fas fa-bomb",
                 color: "#ff3333",
-                items: semanticConflicts.map(c => ({ ...c, isSemantic: true }))
+                items: semanticConflicts
             });
         }
 
         // 2. METHOD
         if (methodConflicts.length > 0) {
             boxes.push({
-                title: game.i18n.localize("PHILSCONSOLEDOCTOR.UI.MethodContention") || "Methoden-Konflikte",
+                title: game.i18n.localize("PHILSCONSOLEDOCTOR.UI.MethodContention") || "Method Conflicts",
                 desc: game.i18n.localize("PHILSCONSOLEDOCTOR.UI.MethodContentionDesc"),
                 icon: "fas fa-gears",
                 color: "#9b59b6",
                 items: methodConflicts.map(c => ({
                     ...c,
-                    isMethod: true,
                     modulesHTML: c.modules.map(m => `<span class="pcd-badge module">${m}</span>`).join(" ")
                 }))
             });
         }
 
-        // 3. HOOKS (Categories)
+        // 3. BLOCKED (Prioritize this new feature)
+        if (blockedActions.length > 0) {
+            boxes.push({
+                title: game.i18n.localize("PHILSCONSOLEDOCTOR.UI.SilentFailures") || "Blocked Actions",
+                desc: game.i18n.localize("PHILSCONSOLEDOCTOR.UI.BlockedActionsDesc"),
+                icon: "fas fa-ban",
+                color: "#7f8c8d",
+                items: blockedActions.map(b => ({
+                    isBlock: true,
+                    module: b.module,
+                    hook: b.hook,
+                    timestamp: b.timestamp
+                }))
+            });
+        }
+
+        // 4. HOOKS
         const categories = [
             { id: 'UI & Interface', icon: 'fas fa-palette', color: '#f39c12', key: 'UI' },
             { id: 'Actors & Items', icon: 'fas fa-user-shield', color: '#3498db', key: 'Actor' },
@@ -362,90 +334,57 @@ class PhilsConsoleDoctorApp extends HandlebarsApplicationMixin(ApplicationV2) {
             });
         }
 
-        // 4. BLOCKED
-        if (blockedActions.length > 0) {
-            boxes.push({
-                title: game.i18n.localize("PHILSCONSOLEDOCTOR.UI.SilentFailures") || "Blocked Actions",
-                desc: game.i18n.localize("PHILSCONSOLEDOCTOR.UI.BlockedActionsDesc"),
-                icon: "fas fa-ban",
-                color: "#7f8c8d",
-                items: blockedActions.map(b => ({
-                    isBlock: true,
-                    module: b.module,
-                    hook: b.hook,
-                    timestamp: b.timestamp
-                }))
-            });
-        }
-
         return boxes;
     }
 
     /** @override */
     _onRender(context, options) {
         super._onRender(context, options);
-
-        // Bind Search InputManually if needed, but 'input' event usually handled by native form?
-        // ApplicationV2 doesn't auto-bind 'input' to re-render unless we ask it or use state.
-        // We'll attach a listener manually for live search
         const searchInput = this.element.querySelector('input[name="searchQuery"]');
         if (searchInput) {
             searchInput.addEventListener('input', (event) => {
                 this.searchQuery = event.target.value;
-                // Debounce render
                 this._updateListDebounced();
             });
-            // Focus management logic could go here
+            searchInput.value = this.searchQuery; // Maintain focus ref
         }
     }
 
     /* --- ACTION HANDLERS --- */
-
     onTabSwitch(event, target) {
-        const tab = target.dataset.tab;
-        this.activeTab = tab;
+        this.activeTab = target.dataset.tab;
         this.render(true);
     }
-
     onToggleFilter(event, target) {
         const filter = target.dataset.filter;
         this.filters[filter] = !this.filters[filter];
         this.render(true);
     }
-
     onClearConsole(event, target) {
         PCD_CAPTURED_LOGS.length = 0;
         this.render(true);
     }
-
     async onAskAI(event, target) {
         const id = parseInt(target.dataset.id);
         const log = PCD_CAPTURED_LOGS.find(l => l.id === id);
         if (!log) return;
         await this.generatePrompt(log);
     }
-
     onToggleRecording(event, target) {
         if (typeof PCDProfiler === 'undefined') return;
         PCDProfiler.toggleProfiling(!PCDProfiler.IS_PROFILING);
         this.render();
     }
-
     onToggleDiagnosis(event, target) {
         if (typeof PCDProfiler === 'undefined') return;
         PCDProfiler.toggleDiagnosis(!PCDProfiler.IS_DIAGNOSING);
         this.render();
     }
-
-    onRefreshMetrics(event, target) {
-        this.render(true);
-    }
-
-    onClearMetrics(event, target) {
+    onRefreshMetrics() { this.render(true); }
+    onClearMetrics() {
         if (typeof PCDProfiler !== 'undefined') PCDProfiler.clearData();
         this.render(true);
     }
-
     onSortMetrics(event, target) {
         const sort = target.dataset.sort;
         if (this.metricsSort === sort) this.metricsSortDesc = !this.metricsSortDesc;
@@ -456,15 +395,6 @@ class PhilsConsoleDoctorApp extends HandlebarsApplicationMixin(ApplicationV2) {
         this.render(true);
     }
 
-    static onToggleDiagnosis(event, target) {
-        if (typeof PCDProfiler === 'undefined') return;
-        PCDProfiler.toggleRecording(!PCDProfiler.IS_RECORDING);
-        this.render(true);
-    }
-
-    /* --- HELPERS --- */
-
-    // API Hook: Called by window.pcdPatchConsole when new logs arrive
     updateListContent() {
         if (this.activeTab === 'console') {
             this._updateListDebounced();
@@ -490,9 +420,7 @@ class PhilsConsoleDoctorApp extends HandlebarsApplicationMixin(ApplicationV2) {
     }
 }
 
-// Global accessor replacement
 function openDoctorWindow() {
     if (!ui.philsConsoleDoctor) ui.philsConsoleDoctor = new PhilsConsoleDoctorApp();
     ui.philsConsoleDoctor.render(true);
 }
-

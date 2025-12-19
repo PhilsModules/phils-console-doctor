@@ -1,4 +1,23 @@
-# Update Log
+## v1.4.0 - System Monitor, Core Refactor & Fuzzy Grouping
+*   **System Monitoring (NEW):**
+    *   **FPS Tracker:** Now records "System (FPS)" to show client-side frame rate.
+    *   **Latency Monitor:** Records "System (Latency)" (Ping) to server.
+    *   **Idle Load:** "System (Renderer)" Captures the frame time of the main loop, showing "baseline" load.
+*   **Core Logic Refactor (`Patcher`):**
+    *   **Centralized Patching:** Hook interception, Console wrapping, and Canvas monitoring are now handled by a single "Core Patcher" to prevent conflicts between the Profiler and Inspector.
+    *   **Accurate Module Detection:** Now captures the stack trace at the exact moment a Hook is registered, ensuring the "Inspector" knows exactly which module owns a hook (100% accuracy vs fuzzy guessing).
+*   **Console Improvements:**
+    *   **Fuzzy Grouping:** Identical errors with minor differences (e.g. "Texture A missing", "Texture B missing") are now grouped together with a **≈** symbol to clean up the log.
+    *   **Smart Deduping:** Prevents log flooding from rapid-fire errors.
+*   **Conflict Inspector:**
+    *   **Reliable Detection:** No longer guesses "Unknown/System" for complex module code. It reads the tags from the new Core Patcher.
+*   **Console Improvements:**
+    *   **Fuzzy Grouping:** Identical errors with minor differences (e.g. "Texture A missing", "Texture B missing") are now grouped together with a **≈** symbol to clean up the log.
+    *   **Smart Deduping:** Prevents log flooding from rapid-fire errors.
+*   **Conflict Inspector:**
+    *   **Reliable Detection:** No longer guesses "Unknown/System" for complex module code. It reads the tags from the new Core Patcher.
+*   **Profiler:**
+    *   **Canvas Metrics:** Now potentially tracks Canvas Refresh times (experimental).
 
 ## v1.3.0 - ApplicationV2 & Theme Compatibility (Final Polish)
 *   **Performance Monitoring v2:**

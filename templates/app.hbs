@@ -43,8 +43,12 @@
                     <div class="pcd-meta">
                         <span><i class="far fa-clock"></i> {{this.timestamp}}</span>
                         <span style="opacity:0.8; text-transform: uppercase;">{{this.type}}</span>
-                        {{#if (gt this.count 1)}}<span class="pcd-badge count"
-                            title="Occurred {{this.count}} times">x{{this.count}}</span>{{/if}}
+                        {{#if (gt this.count 1)}}
+                        <span class="pcd-badge count {{#if this.similar}}fuzzy{{/if}}"
+                            title="{{#if this.similar}}~{{this.count}} similar entries grouped{{else}}Occurred {{this.count}} times{{/if}}">
+                            {{#if this.similar}}≈{{else}}x{{/if}}{{this.count}}
+                        </span>
+                        {{/if}}
                         {{#if this.sourceModule}}<span class="pcd-badge module"
                             title="Source: {{this.sourceModule.title}}">{{this.sourceModule.title}}</span>{{/if}}
                     </div>
