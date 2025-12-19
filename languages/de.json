@@ -45,6 +45,8 @@
   "PHILSCONSOLEDOCTOR.UI.DescMethod": "Module manipulieren dieselbe Foundry-Funktion. Häufige Ursache für Bugs.",
   "PHILSCONSOLEDOCTOR.UI.NoMethodConflicts": "Keine Methoden-Konflikte erkannt.",
   "PHILSCONSOLEDOCTOR.UI.AdviceMethod": "Diese Module streiten sich um dieselbe Spiellogik.",
+  "PHILSCONSOLEDOCTOR.UI.MethodContention": "Methoden-Konflikte (Logic & System)",
+  "PHILSCONSOLEDOCTOR.UI.MethodContentionDesc": "Kritisch: Mehrere Module überschreiben dieselbe Kernfunktion.",
   "PHILSCONSOLEDOCTOR.UI.NoUIConflicts": "Keine UI-Überlappungen erkannt.",
   "PHILSCONSOLEDOCTOR.UI.NoEnvConflicts": "Keine Atmosphären-Konflikte erkannt.",
   "PHILSCONSOLEDOCTOR.UI.ConflictCategory.UI": "UI & Interface Überlappungen",

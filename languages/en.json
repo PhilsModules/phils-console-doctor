@@ -45,6 +45,8 @@
   "PHILSCONSOLEDOCTOR.UI.DescMethod": "Modules modifying the same core function (libWrapper). Often causes bugs.",
   "PHILSCONSOLEDOCTOR.UI.NoMethodConflicts": "No method contention detected.",
   "PHILSCONSOLEDOCTOR.UI.AdviceMethod": "These modules are fighting over the same game logic.",
+  "PHILSCONSOLEDOCTOR.UI.MethodContention": "Method Contention (Logic & System)",
+  "PHILSCONSOLEDOCTOR.UI.MethodContentionDesc": "Critical: Multiple modules are overriding the same core function.",
   "PHILSCONSOLEDOCTOR.UI.NoUIConflicts": "No UI contention detected.",
   "PHILSCONSOLEDOCTOR.UI.NoEnvConflicts": "No environment conflicts detected.",
   "PHILSCONSOLEDOCTOR.UI.NoCriticalConflicts": "No critical conflicts detected.",

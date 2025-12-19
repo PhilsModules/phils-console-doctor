@@ -5,154 +5,166 @@
  */
 
 class PCDProfiler {
-    static IS_RECORDING = false;
-    static HOOK_REGISTRY = []; // { hook, id, fn, module }
-    static RECORDED_DATA = new Map(); // Key: "ModuleID:HookName" -> { module, hook, count, totalTime, min, max }
+    static IS_PROFILING = false;  // Metrics
+    static IS_DIAGNOSING = false; // Conflicts/Blocking
+    static HOOK_REGISTRY = [];
+    static RECORDED_DATA = new Map();
+    static BLOCKED_LOGS = [];
     static ENABLED = false;
 
     /**
      * Initializes the Profiler by patching Hooks.on
-     * Must be called AS EARLY AS POSSIBLE (before other modules load).
      */
     static init() {
         if (this.ENABLED) return;
         this.ENABLED = true;
 
         console.log("PCD: Initializing Performance Profiler...");
+        console.log("PCD: Debug - Checking Environment...", {
+            hasApp: typeof Application !== 'undefined',
+            hasPlaceable: typeof PlaceableObject !== 'undefined'
+        });
 
-        // Save original Hooks.on
         const originalHooksOn = Hooks.on;
 
         // Monkey Patch Hooks.on
         Hooks.on = function (hook, fn) {
-            // 1. Identify Source Module via Stack Trace
             let sourceModule = "Foundry Core";
+            // Stack Trace Logic (Simplified)
             try {
                 const stack = new Error().stack;
                 const lines = stack.split('\n');
-
                 for (const line of lines) {
-                    if (line.includes("phils-console-doctor")) continue; // Ignore ourself
-
-                    // Match modules or systems
+                    if (line.includes("phils-console-doctor")) continue;
                     const match = line.match(/(?:modules|systems)\/([^\/]+)\//);
-                    if (match && match[1]) {
-                        sourceModule = match[1];
-                        break; // Found the culprit
-                    }
-
-                    // Fallback for core
-                    if (line.includes("foundry.js") || line.includes("commons.js") || line.includes("pixi.js")) {
-                        sourceModule = "Foundry Core";
-                        // Don't break yet, keep looking for a module high up, but if we finish loop, use this
-                    }
+                    if (match && match[1]) { sourceModule = match[1]; break; }
                 }
-            } catch (e) { /* ignore stack error */ }
+            } catch (e) { }
 
-            // 2. Wrap the function
             const wrappedFn = function (...args) {
-                if (!PCDProfiler.IS_RECORDING) {
+                // If neither mode is active, run raw
+                if (!PCDProfiler.IS_PROFILING && !PCDProfiler.IS_DIAGNOSING) {
                     return fn.apply(this, args);
                 }
 
-                const start = performance.now();
+                const start = PCDProfiler.IS_PROFILING ? performance.now() : 0;
+
                 try {
                     const result = fn.apply(this, args);
-                    // Universal Conflict Detection
-                    if (result === false && typeof hook === 'string' && hook.startsWith('pre')) {
-                        PCDProfiler.recordBlock(sourceModule, hook);
+
+                    // Conflict Diagnosis
+                    if (PCDProfiler.IS_DIAGNOSING) {
+                        if (result === false && typeof hook === 'string' && hook.startsWith('pre')) {
+                            PCDProfiler.recordBlock(sourceModule, hook);
+                        }
                     }
                     return result;
                 } finally {
-                    const duration = performance.now() - start;
-                    PCDProfiler.record(sourceModule, hook, duration);
+                    // Performance Profiling
+                    if (PCDProfiler.IS_PROFILING) {
+                        const duration = performance.now() - start;
+                        PCDProfiler.record(sourceModule, hook, duration);
+                    }
                 }
             };
 
-            // 3. Register internally for debug/inspection (optional)
+            // Register debug info
             PCDProfiler.HOOK_REGISTRY.push({ hook, fn: wrappedFn, originalFn: fn, module: sourceModule });
 
-            // 4. Call original Hooks.on with wrapped function
             return originalHooksOn.call(Hooks, hook, wrappedFn);
         };
 
-        // 5. Patch Application.prototype._render (UI Rendering)
-        const originalRender = Application.prototype._render;
-        Application.prototype._render = async function (force, options) {
-            if (!PCDProfiler.IS_RECORDING) {
-                return originalRender.call(this, force, options);
-            }
-            const start = performance.now();
+        // Retroactive Hook Wrapping (Catch things registered BEFORE us)
+        // Retroactive Hook Wrapping - Defer to 'ready' to catch everything
+        Hooks.once('ready', () => {
             try {
-                return await originalRender.call(this, force, options);
-            } finally {
-                const duration = performance.now() - start;
-                PCDProfiler.record(this.constructor.name, "Render", duration);
-            }
-        };
+                const hookEvents = Hooks.events;
+                const entries = hookEvents instanceof Map ? hookEvents.entries() : Object.entries(hookEvents);
+                let count = 0;
 
-        // 6. Retroactive Hook Wrapping (Catch things registered BEFORE us)
-        try {
-            const hookEvents = Hooks.events;
-            // Handle different Foundry versions (V10+ Map vs Object)
-            const entries = hookEvents instanceof Map ? hookEvents.entries() : Object.entries(hookEvents);
+                for (const [hook, listeners] of entries) {
+                    if (!Array.isArray(listeners)) continue;
 
-            for (const [hook, listeners] of entries) {
-                if (!Array.isArray(listeners)) continue;
+                    for (let i = 0; i < listeners.length; i++) {
+                        const originalFn = listeners[i];
+                        if (!originalFn || originalFn._pcdWrapped) continue;
 
-                // We mutate the array in place
-                for (let i = 0; i < listeners.length; i++) {
-                    const originalFn = listeners[i];
-                    // Skip if already wrapped (unlikely) or if it's our own
-                    if (originalFn._pcdWrapped) continue;
+                        const wrappedFn = function (...args) {
+                            if (!PCDProfiler.IS_PROFILING && !PCDProfiler.IS_DIAGNOSING) return originalFn.apply(this, args);
 
-                    const wrappedFn = function (...args) {
-                        if (!PCDProfiler.IS_RECORDING) return originalFn.apply(this, args);
-                        const start = performance.now();
-                        try {
-                            return originalFn.apply(this, args);
-                        } finally {
-                            PCDProfiler.record("Retroactive (Core/System)", hook, performance.now() - start);
-                        }
-                    };
-                    wrappedFn._pcdWrapped = true;
-                    // Try to preserve original properties
-                    wrappedFn.fn = originalFn;
-
-                    listeners[i] = wrappedFn;
-                }
-            }
-            console.log("PCD: Retroactively wrapped existing hooks.");
-        } catch (err) {
-            console.warn("PCD: Failed to patch existing hooks:", err);
-        }
-
-        // 7. Patch PlaceableObject.prototype.refresh (Canvas/Token Movement)
-        try {
-            if (typeof PlaceableObject !== 'undefined') {
-                const originalRefresh = PlaceableObject.prototype.refresh;
-                PlaceableObject.prototype.refresh = function () {
-                    if (!PCDProfiler.IS_RECORDING) return originalRefresh.apply(this, arguments);
-
-                    const start = performance.now();
-                    try {
-                        return originalRefresh.apply(this, arguments);
-                    } finally {
-                        PCDProfiler.record(this.constructor.name || "Placeable", "Canvas Refresh", performance.now() - start);
+                            const start = PCDProfiler.IS_PROFILING ? performance.now() : 0;
+                            try {
+                                const result = originalFn.apply(this, args);
+                                if (PCDProfiler.IS_DIAGNOSING && result === false && typeof hook === 'string' && hook.startsWith('pre')) {
+                                    PCDProfiler.recordBlock("Retroactive (Core/System)", hook);
+                                }
+                                return result;
+                            } finally {
+                                if (PCDProfiler.IS_PROFILING) {
+                                    // Identify Source (Basic)
+                                    PCDProfiler.record("Core/System/Other", hook, performance.now() - start);
+                                }
+                            }
+                        };
+                        wrappedFn._pcdWrapped = true;
+                        wrappedFn.fn = originalFn;
+                        listeners[i] = wrappedFn;
+                        count++;
                     }
-                };
-                console.log("PCD: Patched PlaceableObject.refresh for canvas metrics.");
+                }
+                console.log(`PCD: Retroactively wrapped ${count} existing hooks on 'ready'.`);
+            } catch (err) {
+                console.warn("PCD: Failed to patch existing hooks:", err);
             }
-        } catch (err) { console.warn("PCD: Failed to patch PlaceableObject:", err); }
-    };
+        });
 
-    static toggleRecording(active) {
-        this.IS_RECORDING = active;
-        if (active) {
-            console.log("PCD: 🔴 Recording started...");
-        } else {
-            console.log("PCD: ⏹️ Recording stopped.");
+
+
+        // 5. Patch Application (Legacy)
+        if (typeof Application !== 'undefined' && Application.prototype._render) {
+            const originalRender = Application.prototype._render;
+            Application.prototype._render = async function (force, options) {
+                if (!PCDProfiler.IS_PROFILING) return originalRender.call(this, force, options);
+                const start = performance.now();
+                try { return await originalRender.call(this, force, options); }
+                finally { PCDProfiler.record(this.constructor.name, "Render (Legacy)", performance.now() - start); }
+            };
         }
+
+        // 6. Patch ApplicationV2 (V13)
+        const AppV2 = foundry.applications?.api?.ApplicationV2;
+        if (AppV2 && AppV2.prototype.render) {
+            const originalRenderV2 = AppV2.prototype.render;
+            AppV2.prototype.render = async function (options) {
+                if (!PCDProfiler.IS_PROFILING) return originalRenderV2.call(this, options);
+                const start = performance.now();
+                try { return await originalRenderV2.call(this, options); }
+                finally { PCDProfiler.record(this.constructor.name, "Render (V2)", performance.now() - start); }
+            };
+        }
+
+        // 7. Patch PlaceableObject (V13 Safe)
+        const Placeable = foundry.canvas?.placeables?.PlaceableObject || (typeof PlaceableObject !== 'undefined' ? PlaceableObject : null);
+        if (Placeable && Placeable.prototype.refresh) {
+            const originalRefresh = Placeable.prototype.refresh;
+            Placeable.prototype.refresh = function () {
+                if (!PCDProfiler.IS_PROFILING) return originalRefresh.apply(this, arguments);
+                const start = performance.now();
+                try { return originalRefresh.apply(this, arguments); }
+                finally { PCDProfiler.record(this.constructor.name || "Placeable", "Canvas Refresh", performance.now() - start); }
+            };
+            console.log("PCD: Patched PlaceableObject (V13-aware) for canvas metrics.");
+        }
+    }
+
+    static toggleProfiling(active) {
+        this.IS_PROFILING = active;
+        console.log(`PCD: ${active ? '🔴 Profiling' : '⏹️ Profiling'} ${active ? 'started' : 'stopped'}.`);
+    }
+
+    static toggleDiagnosis(active) {
+        this.IS_DIAGNOSING = active;
+        console.log(`PCD: ${active ? '🛡️ Live Diagnosis' : '⏹️ Live Diagnosis'} ${active ? 'started' : 'stopped'}.`);
     }
 
     static clearData() {
@@ -162,6 +174,7 @@ class PCDProfiler {
     }
 
     static record(moduleName, hookName, duration) {
+        // console.log(`PCD Record: ${moduleName} - ${hookName} (${duration.toFixed(2)}ms)`);
         const key = `${moduleName}||${hookName}`;
         if (!this.RECORDED_DATA.has(key)) {
             this.RECORDED_DATA.set(key, {

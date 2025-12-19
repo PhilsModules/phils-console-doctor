@@ -1,7 +1,5 @@
 /* --- WINDOW LAYOUT --- */
 .phils-console-doctor-window .window-content {
-    background: url('/ui/parchment.jpg') repeat !important;
-    color: #191813 !important;
     display: flex;
     flex-direction: column;
     padding: 0 !important;
@@ -9,12 +7,19 @@
     overflow: hidden !important;
 }
 
-/* Wrapper div from _renderInner */
+#phils-console-doctor-app {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
 .pcd-main-layout {
     display: flex;
     flex-direction: column;
     height: 100%;
     overflow: hidden;
+    min-height: 0;
 }
 
 /* --- HEADER --- */
@@ -28,8 +33,8 @@
 
 .pcd-filter-btn {
     background: rgba(0, 0, 0, 0.05);
-    border: 1px solid #b5b3a4;
-    color: #191813;
+    border: 1px solid var(--color-border-light-2);
+    /* color: #191813; */
     padding: 5px 10px;
     border-radius: 3px;
     cursor: pointer;
@@ -46,17 +51,19 @@
 
 .pcd-filter-btn:hover {
     background: rgba(0, 0, 0, 0.1);
-    color: #000;
+    /* color: #000; */
 }
 
 .pcd-filter-btn.active[data-filter="warn"] {
-    background: #665200;
+    background: rgba(102, 82, 0, 0.5);
+    /* Semi-transparent for better blending */
     color: #ffd700;
     border-color: #ffd700;
 }
 
 .pcd-filter-btn.active[data-filter="error"] {
-    background: #660000;
+    background: rgba(102, 0, 0, 0.5);
+    /* Semi-transparent */
     color: #ff5555;
     border-color: #ff5555;
 }
@@ -96,7 +103,7 @@
 
 /* --- TEXT --- */
 .pcd-message {
-    color: #191813;
+    /* color: #191813; REMOVED to inherit from theme */
     white-space: pre-wrap;
     word-break: break-word;
     font-size: 12px;
@@ -110,8 +117,10 @@
     justify-content: space-between;
     align-items: center;
     font-size: 11px;
-    color: #4b4a44;
-    border-bottom: 1px solid #b5b3a4;
+    opacity: 0.7;
+    /* Instead of specific gray color */
+    border-bottom: 1px solid var(--color-border-light-2);
+    /* Use var or keep generic border */
     padding-bottom: 2px;
     margin-bottom: 2px;
 }
@@ -175,8 +184,8 @@
 /* --- TABS --- */
 .pcd-tabs {
     display: flex;
-    background: rgba(0,0,0,0.1);
-    border-bottom: 1px solid #b5b3a4;
+    background: rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid var(--color-border-light-2);
 }
 
 .pcd-tab-btn {
@@ -185,9 +194,9 @@
     padding: 8px;
     cursor: pointer;
     font-weight: bold;
-    color: #4b4a44;
+    opacity: 0.7;
     transition: all 0.2s;
-    border-right: 1px solid #b5b3a4;
+    border-right: 1px solid var(--color-border-light-2);
 }
 
 .pcd-tab-btn:last-child {
@@ -195,13 +204,13 @@
 }
 
 .pcd-tab-btn:hover {
-    background: rgba(0,0,0,0.05);
-    color: #000;
+    background: rgba(0, 0, 0, 0.05);
+    opacity: 1;
 }
 
 .pcd-tab-btn.active {
-    background: rgba(255,255,255,0.3);
-    color: #191813;
+    background: rgba(255, 255, 255, 0.1);
+    opacity: 1;
     border-bottom: 3px solid #782e22;
 }
 
@@ -209,14 +218,24 @@
     display: flex;
     flex-direction: column;
     flex: 1;
+    flex: 1;
     overflow: hidden;
+    min-height: 0;
+}
+
+/* Ensure content area fills space */
+.pcd-content-area {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden;
+    min-height: 0;
 }
 
 /* --- CONTROLS --- */
 .pcd-control-btn {
-    background: rgba(0,0,0,0.05);
-    border: 1px solid #b5b3a4;
-    color: #191813;
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--color-border-light-2);
     padding: 5px 10px;
     border-radius: 3px;
     cursor: pointer;
@@ -227,12 +246,15 @@
     align-items: center;
     gap: 5px;
 }
-.pcd-control-btn:hover { background: rgba(0,0,0,0.1); }
+
+.pcd-control-btn:hover {
+    background: rgba(0, 0, 0, 0.1);
+}
 
 /* --- TABLE --- */
 .pcd-table-header {
     display: flex;
-    background: rgba(0,0,0,0.1);
+    background: rgba(0, 0, 0, 0.1);
     border-bottom: 1px solid #b5b3a4;
     padding: 5px 8px;
     font-weight: bold;
@@ -246,34 +268,62 @@
     padding: 0 5px;
 }
 
-.pcd-table-header .pcd-col { cursor: pointer; }
-.pcd-table-header .pcd-col:hover { color: #000; text-decoration: underline; }
+.pcd-table-header .pcd-col {
+    cursor: pointer;
+}
 
-.col-module { flex: 2; }
-.col-hook { flex: 2; }
-.col-time { flex: 1; text-align: right; }
-.col-count { flex: 0 0 60px; text-align: right; }
-.col-avg { flex: 1; text-align: right; }
+.pcd-table-header .pcd-col:hover {
+    color: #000;
+    text-decoration: underline;
+}
+
+.col-module {
+    flex: 2;
+}
+
+.col-hook {
+    flex: 2;
+}
+
+.col-time {
+    flex: 1;
+    text-align: right;
+}
+
+.col-count {
+    flex: 0 0 60px;
+    text-align: right;
+}
+
+.col-avg {
+    flex: 1;
+    text-align: right;
+}
 
 .pcd-metrics-list {
     flex: 1;
     overflow-y: auto;
     padding: 5px 0;
+    min-height: 0;
+    /* Important for flex scrolling */
 }
 
 .pcd-metric-row {
     display: flex;
     padding: 4px 8px;
-    border-bottom: 1px solid rgba(0,0,0,0.05);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
     font-size: 12px;
 }
 
-.pcd-metric-row:hover { background: rgba(0,0,0,0.05); }
+.pcd-metric-row:hover {
+    background: rgba(0, 0, 0, 0.05);
+}
 
 /* Impact Colors */
 .pcd-metric-row.med-impact {
     background: rgba(255, 215, 0, 0.1);
 }
+
 .pcd-metric-row.high-impact {
     background: rgba(255, 85, 85, 0.15);
     font-weight: bold;

@@ -1,5 +1,17 @@
 # Update Log
 
+## v1.3.0 - ApplicationV2 & Theme Compatibility (Final Polish)
+*   **Performance Monitoring v2:**
+    *   **Decoupled Logic:** Separation of "Performance Profiler" and "Conflict Detective" avoids interference.
+    *   **V13 Compatibility:** Updated to support `ApplicationV2` and `foundry.canvas.placeables`. Removed deprecated warnings.
+    *   **Retroactive Patching:** Improved background monitoring to correctly capture all Core and System hooks registered at startup.
+    *   **Scroll Fix:** Resolved issue where lists in `ApplicationV2` windows were not scrollable.
+*   **Theme Standardization:**
+    *   **Unified Look:** Now uses the standard Foundry "Parchment" theme by default.
+    *   **Dark Mode Support:** Fully compatible with global dark themes like `phils-pf2e-realdark`.
+*   **Tab System:** Upgraded to the new V2 Tab architecture for smoother navigation.
+
+
 ## Version 1.2.4
 *   **New Feature:** Added 'Live Diagnosis' button to Conflict Detective.
     *   Allows manually starting/stopping recording to catch silent failures.
