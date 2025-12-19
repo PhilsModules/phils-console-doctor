@@ -42,12 +42,12 @@ Phil's Console Doctor überwacht deine Konsole in Echtzeit auf Fehler und Warnun
 * 🧹 **Smart Grouping:** Fasst identische Fehler zusammen (z.B. `x5` Badge), damit dein Log sauber bleibt.
 * 📝 **Smarte Prompts:** Erstellt automatisch einen detaillierten Prompt mit Fehlermeldung, Stack Trace und deiner Modul-Liste.
 
-## 🛡️ Smart Conflict Detector (Neu in v1.2)
+## 🛡️ Smart Conflict Detector
 * **Explizite Inkompatibilitäten:** Erkennt, wenn Module sich selbst als inkompatibel melden.
 * **Stille Fehler:** Findet Aktionen, die heimlich von einem Modul blockiert wurden.
 * **Hook Inspector:** Visualisiert, welche Module um die gleiche Logik kämpfen (z.B. Bewegung, Licht).
 
-## ⚡ Performance Monitor (Neu in v1.3)
+## ⚡ Performance Monitor
 * **Lag-Killer:** Identifiziert sofort, welches Modul dein Spiel verlangsamt.
 * **System Monitor (NEU):** Zeigt jetzt FPS, Netzwerk-Latenz (Ping) und Render-Zeiten an, um "Idle"-Prozesse zu überwachen.
 * **Detaillierte Analyse:** Zeigt exakt an, wie viele Millisekunden jedes Modul für Hooks, Rendering oder Canvas-Updates benötigt.
@@ -88,12 +88,12 @@ Phil's Console Doctor is your personal diagnostic assistant for Foundry VTT. It 
 * **Smart Grouping:** Deduplicates identical errors to keep your log clean.
 * **Smart Prompts:** Automatically generates a detailed prompt with the error message, stack trace, and your active module list.
 
-## 🛡️ Smart Conflict Detector (New in v1.2)
+## 🛡️ Smart Conflict Detector
 * **Explicit Incompatibility:** Detects when modules declare themselves incompatible.
 * **Silent Failures:** Identifies actions that were silently blocked by a module without throwing an error.
 * **Hook Inspector:** Visualizes which modules are fighting over the same game logic (e.g., Movement, Lighting).
 
-## ⚡ Performance Monitor (New in v1.3)
+## ⚡ Performance Monitor
 * **Lag Killer:** Instantly identifies which module is slowing down your game.
 * **Detailed Analysis:** Shows exactly how many milliseconds each module takes for hooks, rendering, or canvas updates.
 * **Background Check:** Monitors invisible processes running in the background.
@@ -125,4 +125,5 @@ Phil's Console Doctor is your personal diagnostic assistant for Foundry VTT. It 
     </a>
     <br><br>
     <p><i>Made with ❤️ for the Foundry VTT Community</i></p>
+
 </div>
