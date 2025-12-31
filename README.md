@@ -5,7 +5,7 @@
 ![Foundry v13 Compatible](https://img.shields.io/badge/Foundry-v13-brightgreen)
 ![Foundry v12 Compatible](https://img.shields.io/badge/Foundry-v12-green)
 ![License](https://img.shields.io/badge/License-GPLv3-blue)
-[![Version](https://img.shields.io/badge/Version-1.5.0-orange)](https://github.com/PhilsModules/phils-console-doctor/releases)
+[![Version](https://img.shields.io/badge/Version-1.4.0-orange)](https://github.com/PhilsModules/phils-console-doctor/releases)
 [![Patreon](https://img.shields.io/badge/SUPPORT-Patreon-ff424d?logo=patreon)](https://www.patreon.com/PhilsModules)
 
 <br>
@@ -65,44 +65,49 @@ Phil's Console Doctor überwacht deine Konsole in Echtzeit auf Fehler und Warnun
 2.  Gehe zum Reiter **Add-on Modules**.
 3.  Klicke auf **Install Module**.
 4.  Füge die folgende **Manifest URL** unten ein:
-
     ```text
-
-    ```
-
-````text
     https://github.com/PhilsModules/phils-console-doctor/releases/latest/download/module.json
     ```
 5.  Klicke auf **Install**.
 
 ## 📖 Handbuch & Bedienung
 
-### 1. Tab: >_ Konsole (Fehler & Diagnose)
+### 1. Tab: >\_ Konsole (Fehler & Diagnose)
+
 Dein Dashboard. Hier landen alle Fehlermeldungen (Rot) und Warnungen (Gelb).
-*   **Analyse:** Klicke auf den **Zauberstab / KI Button** neben einem Fehler. Der Doktor erstellt einen perfekten Text, den du an eine KI (ChatGPT/Claude) schicken kannst, um die Lösung zu finden.
-*   **Filter:** Nutze die Suche oder die Buttons oben, um die Liste zu filtern.
+
+- **Analyse:** Klicke auf den **Zauberstab / KI Button** neben einem Fehler. Der Doktor erstellt einen perfekten Text, den du an eine KI (ChatGPT/Claude) schicken kannst, um die Lösung zu finden.
+- **Filter:** Nutze die Suche oder die Buttons oben, um die Liste zu filtern.
 
 ### 2. Tab: Performance Monitor
+
 Hier prüfst du, warum Foundry langsam ist.
-*   **Wichtig:** Du musst erst die **Aufnahme starten** (Kreis-Icon oben rechts), damit Daten gesammelt werden.
-*   **Lag-Killer:** Sortiere die Liste nach **Total (ms)**. Module ganz oben verbrauchen am meisten Leistung.
-*   **System:** Ganz oben siehst du FPS (Bilder pro Sekunde) und Ping (Verzögerung).
+
+- **Wichtig:** Du musst erst die **Aufnahme starten** (Kreis-Icon oben rechts), damit Daten gesammelt werden.
+- **Lag-Killer:** Sortiere die Liste nach **Total (ms)**. Module ganz oben verbrauchen am meisten Leistung.
+- **System:** Ganz oben siehst du FPS (Bilder pro Sekunde) und Ping (Verzögerung).
 
 ### 3. Tab: Konflikte (Conflict Resolver)
+
 Wenn zwei Module nicht miteinander können.
-*   **Problemlösung:** Klicke auf den Button **Konflikt-Lösung starten**.
-*   **Safelist:** Ein Fenster erscheint. Wähle hier Module aus, die **NIEMALS** abgeschaltet werden dürfen (z.B. dein Spielsystem `dnd5e`/`pf2e`, `libWrapper` oder Karten-Module).
-*   **Der Prozess:** Foundry lädt neu und schaltet testweise Module aus. Du musst nur antworten: "Ist der Fehler noch da?" (Ja/Nein). Das wiederholt sich, bis der Schuldige gefunden ist.
+
+- **Problemlösung:** Klicke auf den Button **Konflikt-Lösung starten**.
+- **Safelist:** Ein Fenster erscheint. Wähle hier Module aus, die **NIEMALS** abgeschaltet werden dürfen (z.B. dein Spielsystem `dnd5e`/`pf2e`, `libWrapper` oder Karten-Module).
+- **Der Prozess:** Foundry lädt neu und schaltet testweise Module aus. Du musst nur antworten: "Ist der Fehler noch da?" (Ja/Nein). Das wiederholt sich, bis der Schuldige gefunden ist.
 
 ### 4. Tab: Listener (Hooks & Loops)
+
 Für Profis, die "stille" Fehler oder Endlosschleifen suchen.
-*   **Aufnahme:** Auch hier musst du die Aufnahme starten.
-*   **Schleifen-Schutz (Loop Protection):** Das Modul überwacht im Hintergrund alles. Wenn ein Modul "durchdreht" (z.B. 100 Chat-Nachrichten pro Sekunde sendet), stoppt der Doktor es automatisch und zeigt dir eine Warnung.
-*   **Hooks:** Zeigt dir live, welche Events im Hintergrund feuern.
+
+- **Aufnahme:** Auch hier musst du die Aufnahme starten.
+- **Schleifen-Schutz (Loop Protection):** Das Modul überwacht im Hintergrund alles. Wenn ein Modul "durchdreht" (z.B. 100 Chat-Nachrichten pro Sekunde sendet), stoppt der Doktor es automatisch und zeigt dir eine Warnung.
+- **Hooks:** Zeigt dir live, welche Events im Hintergrund feuern.
 
 ### 5. Tab: Module (Verwaltung & Reset)
+
 Hier siehst du alle aktiven Module.
-*   **Factory Reset:** Wenn ein Modul kaputt ist, mache einen **Rechtsklick** auf die Karte im Liste. Wähle **Factory Reset**, um alle Einstellungen dieses Moduls (Welt, Client oder Flags) komplett zu löschen und es auf "Neu" zurückzusetzen.
+
+- **Factory Reset:** Wenn ein Modul kaputt ist, mache einen **Rechtsklick** auf die Karte im Liste. Wähle **Factory Reset**, um alle Einstellungen dieses Moduls (Welt, Client oder Flags) komplett zu löschen und es auf "Neu" zurückzusetzen.
 
 ---
 
@@ -148,32 +153,42 @@ Phil's Console Doctor is your personal diagnostic assistant for Foundry VTT. It 
 
 ## 📖 User Manual
 
-### 1. Tab: >_ Console (Diagnosis)
+### 1. Tab: >\_ Console (Diagnosis)
+
 Your main dashboard. All errors (Red) and warnings (Yellow) appear here.
-*   **Analysis:** Click the **Wand / AI Button** next to an error. The Doctor generates a perfect prompt for you to send to ChatGPT/Claude.
-*   **Filter:** Use the search bar or top buttons to filter the list.
+
+- **Analysis:** Click the **Wand / AI Button** next to an error. The Doctor generates a perfect prompt for you to send to ChatGPT/Claude.
+- **Filter:** Use the search bar or top buttons to filter the list.
 
 ### 2. Tab: Performance Monitor
+
 Check why Foundry is lagging.
-*   **Important:** You must **Start Recording** (Circle Icon top right) to gather data.
-*   **Lag Killer:** Sort the list by **Total (ms)**. Modules at the top are using the most resources.
-*   **System:** View your FPS and Ping (Latency) at the very top.
+
+- **Important:** You must **Start Recording** (Circle Icon top right) to gather data.
+- **Lag Killer:** Sort the list by **Total (ms)**. Modules at the top are using the most resources.
+- **System:** View your FPS and Ping (Latency) at the very top.
 
 ### 3. Tab: Conflicts (Conflict Resolver)
+
 Use this when two modules aren't getting along.
-*   **Resolution:** Click the button **Start Conflict Resolution**.
-*   **Safelist:** A window appears. Select modules that must **NEVER** be disabled (e.g. your System `dnd5e`/`pf2e`, `libWrapper`, or Map modules).
-*   **The Process:** Foundry will reload and test modules. You simply answer: "Is the issue still here?" (Yes/No). This repeats until the culprit is found.
+
+- **Resolution:** Click the button **Start Conflict Resolution**.
+- **Safelist:** A window appears. Select modules that must **NEVER** be disabled (e.g. your System `dnd5e`/`pf2e`, `libWrapper`, or Map modules).
+- **The Process:** Foundry will reload and test modules. You simply answer: "Is the issue still here?" (Yes/No). This repeats until the culprit is found.
 
 ### 4. Tab: Listener (Hooks & Loops)
+
 For advanced users looking for "silent" bugs or infinite loops.
-*   **Recording:** You must start recording here too.
-*   **Loop Protection:** The Doctor monitors everything in the background. If a module goes crazy (e.g., sending 100 chat messages/sec), the Doctor automatically stops it and warns you.
-*   **Hooks:** See exactly which events are firing in the background.
+
+- **Recording:** You must start recording here too.
+- **Loop Protection:** The Doctor monitors everything in the background. If a module goes crazy (e.g., sending 100 chat messages/sec), the Doctor automatically stops it and warns you.
+- **Hooks:** See exactly which events are firing in the background.
 
 ### 5. Tab: Modules (Management & Reset)
+
 View all active modules.
-*   **Factory Reset:** If a module is broken, **Right-Click** its card in the list. Select **Factory Reset** to completely wipe its settings (World, Client, or Flags) and restore it to a fresh state.
+
+- **Factory Reset:** If a module is broken, **Right-Click** its card in the list. Select **Factory Reset** to completely wipe its settings (World, Client, or Flags) and restore it to a fresh state.
 
 <div align="center">
     <h2>❤️ Support the Development</h2>
@@ -186,4 +201,3 @@ View all active modules.
     <p><i>Made with ❤️ for the Foundry VTT Community</i></p>
 </div>
 ````
-
