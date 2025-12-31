@@ -12,6 +12,12 @@
             data-action="viewTab">
             <i class="fas fa-shield-halved"></i> {{localize "PHILSCONSOLEDOCTOR.UI.TabConflicts"}}
         </a>
+        <a class="item pcd-tab-btn {{#if (eq activeTab 'listener')}}active{{/if}}" data-tab="listener" data-action="viewTab">
+            <i class="fas fa-satellite-dish"></i> {{localize "PHILSCONSOLEDOCTOR.UI.TabListener"}}
+        </a>
+        <a class="item pcd-tab-btn {{#if (eq activeTab 'modules')}}active{{/if}}" data-tab="modules" data-action="viewTab">
+            <i class="fas fa-boxes"></i> {{localize "PHILSCONSOLEDOCTOR.UI.TabModules"}}
+        </a>
     </nav>
 
     <div class="pcd-content-area">
@@ -129,92 +135,214 @@
         {{!-- CONFLICTS TAB --}}
         {{#if (eq activeTab 'conflicts')}}
         <div class="tab pcd-tab-content active" data-tab="conflicts">
-            <div class="pcd-header" style="justify-content: space-between; align-items: center;">
-                <h3 style="margin:0; border:none; flex-grow:1;"><i class="fas fa-shield-halved"></i> {{localize
-                    "PHILSCONSOLEDOCTOR.UI.ConflictsTitle"}}</h3>
+            {{#if isResolving}}
+                <!-- RESOLVER ACTIVE INTERFACE -->
+                <div class="pcd-resolver-active">
+                    <div class="pcd-resolver-header">
+                        <i class="fas fa-microscope fa-spin"></i>
+                        <h2>{{localize "PHILSCONSOLEDOCTOR.UI.ResolverActive"}}</h2>
+                    </div>
 
-                <button type="button" class="pcd-control-btn" data-action="toggleDiagnosis"
-                    style="flex: 0 0 auto; width: auto; font-size: 0.8rem; padding: 2px 8px; line-height: 1.5; border: 1px solid rgba(0,0,0,0.2); {{#if isDiagnosing}}color: #ff5555; border-color: #ff5555;{{/if}}">
-                    {{#if isDiagnosing}}
-                    <i class="fas fa-stop" style="font-size: 0.7rem; vertical-align: middle;"></i> <span
-                        style="vertical-align: middle;">{{localize "PHILSCONSOLEDOCTOR.UI.StopDiagnosis"}}</span>
+                    {{#if resolverState.finished}}
+                        <!-- RESULT FOUND -->
+                        <div class="pcd-resolver-result">
+                            <h3>{{localize "PHILSCONSOLEDOCTOR.UI.CulpritFound"}}</h3>
+                            <div class="pcd-culprit-badge">{{resolverState.culprit}}</div>
+                            <p>{{localize "PHILSCONSOLEDOCTOR.UI.CulpritDesc"}}</p>
+                            <button type="button" data-action="stopBisect" class="pcd-btn pcd-btn-primary">
+                                <i class="fas fa-check"></i> {{localize "PHILSCONSOLEDOCTOR.UI.Finish"}}
+                            </button>
+                        </div>
                     {{else}}
-                    <i class="fas fa-circle" style="font-size: 0.7rem; vertical-align: middle; color: #ff5555;"></i>
-                    <span style="vertical-align: middle;">{{localize "PHILSCONSOLEDOCTOR.UI.StartDiagnosis"}}</span>
+                        <!-- QUESTION PHASE -->
+                        <div class="pcd-resolver-question">
+                            <p class="pcd-resolver-step">{{localize "PHILSCONSOLEDOCTOR.UI.Step"}} {{resolverState.step}}: {{resolverState.candidates.length}} {{localize "PHILSCONSOLEDOCTOR.UI.ModulesRemaining"}}</p>
+                            <h3>{{localize "PHILSCONSOLEDOCTOR.UI.IssuePersistQuestion"}}</h3>
+                            <div class="pcd-resolver-actions">
+                                <button type="button" data-action="bisectYes" class="pcd-btn pcd-btn-danger">
+                                    <i class="fas fa-bug"></i> {{localize "PHILSCONSOLEDOCTOR.UI.YesPersists"}}
+                                </button>
+                                <button type="button" data-action="bisectNo" class="pcd-btn pcd-btn-success">
+                                    <i class="fas fa-magic"></i> {{localize "PHILSCONSOLEDOCTOR.UI.NoGone"}}
+                                </button>
+                            </div>
+                             <button type="button" data-action="stopBisect" class="pcd-btn pcd-btn-text">
+                                <i class="fas fa-times"></i> {{localize "PHILSCONSOLEDOCTOR.UI.Abort"}}
+                            </button>
+                        </div>
                     {{/if}}
+                </div>
+            {{else}}
+                <!-- DEFAULT CONFLICTS VIEW -->
+                <div class="pcd-header" style="justify-content: space-between; align-items: center;">
+                    <h3 style="margin:0; border:none; flex-grow:1;"><i class="fas fa-shield-halved"></i> {{localize "PHILSCONSOLEDOCTOR.UI.ConflictsTitle"}}</h3>
+
+                    <div style="display:flex; gap:5px;">
+                        <button type="button" class="pcd-control-btn" data-action="startBisect">
+                            <i class="fas fa-vial"></i> {{localize "PHILSCONSOLEDOCTOR.UI.StartResolver"}}
+                        </button>
+                        
+                        <button type="button" class="pcd-control-btn" data-action="toggleDiagnosis"
+                            style="flex: 0 0 auto; width: auto; font-size: 0.8rem; padding: 2px 8px; line-height: 1.5; border: 1px solid rgba(0,0,0,0.2); {{#if isDiagnosing}}color: #ff5555; border-color: #ff5555;{{/if}}">
+                            {{#if isDiagnosing}}
+                            <i class="fas fa-stop" style="font-size: 0.7rem; vertical-align: middle;"></i> <span
+                                style="vertical-align: middle;">{{localize "PHILSCONSOLEDOCTOR.UI.StopDiagnosis"}}</span>
+                            {{else}}
+                            <i class="fas fa-circle" style="font-size: 0.7rem; vertical-align: middle; color: #ff5555;"></i>
+                            <span style="vertical-align: middle;">{{localize "PHILSCONSOLEDOCTOR.UI.StartDiagnosis"}}</span>
+                            {{/if}}
+                        </button>
+                    </div>
+                </div>
+
+                <div id="pcd-conflicts-container" style="padding: 10px; overflow-y: auto; height: 100%;">
+                    {{#if isDiagnosing}}
+                    <div style="background:rgba(231, 76, 60, 0.1); color:#c0392b; padding:8px; text-align:center; border-radius:4px; margin-bottom:10px; font-size:0.9em;">
+                        <i class="fas fa-circle fa-beat" style="font-size:0.8em; margin-right:5px;"></i> {{localize "PHILSCONSOLEDOCTOR.UI.DiagnosisRunning"}}
+                    </div>
+                    {{/if}}
+
+                    {{#if hasConflicts}}
+                        {{#each conflictsBoxes}}
+                        <div class="pcd-section-box" style="border-left: 4px solid {{this.color}}; margin-top: 10px;">
+                            <h5 style="margin:0 0 5px 0; color:{{this.color}}; font-size:1.1em;"><i class="{{this.icon}}"></i> {{this.title}} ({{this.items.length}})</h5>
+                            {{#if this.desc}}<p style="font-size:0.9em; opacity:0.8; margin-bottom:8px; line-height:1.3;">{{this.desc}}</p>{{/if}}
+
+                            <div style="max-height: 250px; overflow-y: auto; padding-right:5px;">
+                                {{#each this.items}}
+                                <div class="pcd-conflict-item" style="border-left-color:{{../color}}40;">
+                                    {{#if this.isSemantic}}
+                                    <div style="font-weight:bold; color:{{../color}};">{{this.module}}</div>
+                                    <div style="font-size:0.95em;">{{this.message}}</div>
+                                    <div style="font-size:0.8em; opacity:0.6; text-align:right; margin-top:2px;">{{this.timestamp}}</div>
+                                    {{else if this.isMethod}}
+                                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                                        <span style="font-family:monospace; font-weight:bold; font-size:1em;">{{this.target}}</span>
+                                        <span class="pcd-badge count" style="background:{{../color}}20; color:{{../color}};">x{{this.count}}</span>
+                                    </div>
+                                    <div style="margin-top:4px; font-size:0.9em opacity:0.9;">{{{this.modulesHTML}}}</div>
+                                    {{else if this.isHook}}
+                                    <div style="display:flex; justify-content:space-between;">
+                                        <span style="font-family:monospace; font-weight:bold;">{{this.hook}}</span>
+                                        <span class="pcd-badge count">x{{this.count}}</span>
+                                    </div>
+                                    <div style="margin-top:3px; font-size:0.85em; opacity:0.8; line-height:1.4;">{{{this.modulesHTML}}}</div>
+                                    {{else if this.isBlock}}
+                                    <div><strong style="color:{{../color}};">{{this.module}}</strong> blockierte <span style="font-family:monospace;">{{this.hook}}</span></div>
+                                    <div style="font-size:0.8em; opacity:0.6;">{{this.timestamp}}</div>
+                                    {{/if}}
+                                </div>
+                                {{/each}}
+                            </div>
+                        </div>
+                        {{/each}}
+                    {{else}}
+                         <div id="pcd-no-conflicts" style="text-align:center; padding: 40px; color:#7a7971; font-style:italic;">
+                            {{#if isDiagnosing}}
+                            <i class="fas fa-heartbeat fa-pulse" style="font-size: 3em; color: #e74c3c; margin-bottom: 15px; display: block;"></i>
+                            <div style="font-weight:bold; margin-bottom:5px;">{{localize "PHILSCONSOLEDOCTOR.UI.Diagnosing"}}</div>
+                            <div style="font-size:0.8em; opacity:0.7;">{{localize "PHILSCONSOLEDOCTOR.UI.PerformActions"}}</div>
+                            {{else}}
+                            <i class="fas fa-check-circle" style="font-size: 3em; color: #2ecc71; margin-bottom: 15px; display: block;"></i>
+                            {{localize "PHILSCONSOLEDOCTOR.UI.NoConflicts"}}
+                            {{/if}}
+                        </div>
+                    {{/if}}
+                </div>
+            {{/if}}
+        </div>
+        {{/if}}
+
+        {{!-- LISTENER TAB --}}
+        {{#if (eq activeTab 'listener')}}
+        <div class="tab pcd-tab-content active" data-tab="listener">
+             <div class="pcd-header">
+                {{#if isListening}}
+                <button type="button" class="pcd-control-btn" data-action="toggleRecording" style="color: #ff5555;">
+                    <i class="fas fa-stop"></i> {{localize "PHILSCONSOLEDOCTOR.UI.StopListening"}}
+                </button>
+                <div style="margin-left:10px; font-weight:bold; color:#ff5555; animation: pcd-pulse 1.5s infinite;">
+                    <i class="fas fa-circle"></i> {{localize "PHILSCONSOLEDOCTOR.UI.Listening"}}
+                </div>
+                {{else}}
+                <button type="button" class="pcd-control-btn" data-action="toggleRecording">
+                    <i class="fas fa-circle" style="color: #ff5555;"></i> {{localize "PHILSCONSOLEDOCTOR.UI.StartListening"}}
+                </button>
+                {{/if}}
+
+                <div style="flex-grow:1;"></div>
+
+                <button type="button" class="pcd-control-btn" data-action="clearEvents">
+                    <i class="fas fa-trash"></i> {{localize "PHILSCONSOLEDOCTOR.UI.ClearEvents"}}
                 </button>
             </div>
 
-            <div id="pcd-conflicts-container" style="padding: 10px; overflow-y: auto; height: 100%;">
-
-                {{#if isDiagnosing}}
-                <div
-                    style="background:rgba(231, 76, 60, 0.1); color:#c0392b; padding:8px; text-align:center; border-radius:4px; margin-bottom:10px; font-size:0.9em;">
-                    <i class="fas fa-circle fa-beat" style="font-size:0.8em; margin-right:5px;"></i> {{localize
-                    "PHILSCONSOLEDOCTOR.UI.DiagnosisRunning"}}
-                </div>
-                {{/if}}
-
-                {{#if hasConflicts}}
-                {{#each conflictsBoxes}}
-                <div class="pcd-section-box" style="border-left: 4px solid {{this.color}}; margin-top: 10px;">
-                    <h5 style="margin:0 0 5px 0; color:{{this.color}}; font-size:1.1em;"><i class="{{this.icon}}"></i>
-                        {{this.title}} ({{this.items.length}})</h5>
-                    {{#if this.desc}}<p style="font-size:0.9em; opacity:0.8; margin-bottom:8px; line-height:1.3;">
-                        {{this.desc}}</p>{{/if}}
-
-                    <div style="max-height: 250px; overflow-y: auto; padding-right:5px;">
-                        {{#each this.items}}
-                        <div class="pcd-conflict-item" style="border-left-color:{{../color}}40;">
-                            {{#if this.isSemantic}}
-                            <div style="font-weight:bold; color:{{../color}};">{{this.module}}</div>
-                            <div style="font-size:0.95em;">{{this.message}}</div>
-                            <div style="font-size:0.8em; opacity:0.6; text-align:right; margin-top:2px;">
-                                {{this.timestamp}}</div>
-                            {{else if this.isMethod}}
-                            <div style="display:flex; justify-content:space-between; align-items:center;">
-                                <span
-                                    style="font-family:monospace; font-weight:bold; font-size:1em;">{{this.target}}</span>
-                                <span class="pcd-badge count"
-                                    style="background:{{../color}}20; color:{{../color}};">x{{this.count}}</span>
-                            </div>
-                            <div style="margin-top:4px; font-size:0.9em opacity:0.9;">{{{this.modulesHTML}}}</div>
-                            {{else if this.isHook}}
-                            <div style="display:flex; justify-content:space-between;">
-                                <span style="font-family:monospace; font-weight:bold;">{{this.hook}}</span>
-                                <span class="pcd-badge count">x{{this.count}}</span>
-                            </div>
-                            <div style="margin-top:3px; font-size:0.85em; opacity:0.8; line-height:1.4;">
-                                {{{this.modulesHTML}}}</div>
-                            {{else if this.isBlock}}
-                            <div><strong style="color:{{../color}};">{{this.module}}</strong> blockierte <span
-                                    style="font-family:monospace;">{{this.hook}}</span></div>
-                            <div style="font-size:0.8em; opacity:0.6;">{{this.timestamp}}</div>
-                            {{/if}}
+            <div class="pcd-metrics-list">
+                {{#each events}}
+                <div class="pcd-entry">
+                    <div class="pcd-meta" style="justify-content: space-between;">
+                        <div>
+                            <span><i class="far fa-clock"></i> {{this.timestamp}}</span>
+                            <span class="pcd-badge type {{this.type}}" style="text-transform:uppercase; font-weight:bold; font-size:0.85em; margin-left:5px;">{{this.type}}</span>
                         </div>
-                        {{/each}}
+                        {{#if this.source.title}}
+                        <div class="pcd-badge module" title="{{this.source.id}}">{{this.source.title}}</div>
+                        {{/if}}
                     </div>
+                    
+                    <div style="margin-top:5px; font-family:monospace; font-size:1.05em; word-break:break-all;">
+                        {{this.data}}
+                    </div>
+                    
+                     {{#if this.details}}
+                    <div style="font-size:0.85em; opacity:0.7; margin-top:2px; font-style:italic;">
+                        {{#if this.flavor}}Flavor: {{this.flavor}}{{/if}}
+                    </div>
+                    {{/if}}
+
+                     <div class="pcd-action-area">
+                        <button type="button" class="pcd-ask-btn" data-action="askAI" data-id="event-{{@index}}">
+                            <i class="fas fa-magic"></i> {{localize "PHILSCONSOLEDOCTOR.UI.AskAI"}}
+                        </button>
+                    </div>
+                </div>
+                {{else}}
+                <div style="padding:40px; text-align:center; color:#7a7971; font-style:italic;">
+                    {{localize "PHILSCONSOLEDOCTOR.UI.NoEvents"}}
                 </div>
                 {{/each}}
-
-                {{else}}
-                <div id="pcd-no-conflicts" style="text-align:center; padding: 40px; color:#7a7971; font-style:italic;">
-                    {{#if isDiagnosing}}
-                    <i class="fas fa-heartbeat fa-pulse"
-                        style="font-size: 3em; color: #e74c3c; margin-bottom: 15px; display: block;"></i>
-                    <div style="font-weight:bold; margin-bottom:5px;">{{localize "PHILSCONSOLEDOCTOR.UI.Diagnosing"}}
-                    </div>
-                    <div style="font-size:0.8em; opacity:0.7;">{{localize "PHILSCONSOLEDOCTOR.UI.PerformActions"}}</div>
-                    {{else}}
-                    <i class="fas fa-check-circle"
-                        style="font-size: 3em; color: #2ecc71; margin-bottom: 15px; display: block;"></i>
-                    {{localize "PHILSCONSOLEDOCTOR.UI.NoConflicts"}}
-                    {{/if}}
-                </div>
-                {{/if}}
-
             </div>
         </div>
         {{/if}}
+
+        {{!-- MODULES TAB --}}
+        {{#if (eq activeTab 'modules')}}
+        <div class="tab pcd-tab-content active" data-tab="modules">
+            <div class="pcd-header">
+                <div class="pcd-search-container" style="flex: 1;">
+                    <input type="text" name="moduleSearch"
+                        placeholder="{{localize 'PHILSCONSOLEDOCTOR.UI.SearchModules'}}" value="{{moduleSearch}}">
+                </div>
+            </div>
+
+            <div class="pcd-module-list">
+                {{#each modules}}
+                <div class="pcd-module-card" data-id="{{this.id}}">
+                    <div class="pcd-module-header">
+                        <div class="pcd-module-title" title="{{this.title}}">{{this.title}}</div>
+                    </div>
+                    <div class="pcd-module-meta">
+                        <span><i class="fas fa-code-branch"></i> {{this.version}}</span>
+                        <span><i class="fas fa-user"></i> {{this.author}}</span>
+                    </div>
+                    <div style="font-size:0.75em; opacity:0.5; margin-top:2px; font-family:monospace;">
+                        {{this.id}}
+                    </div>
+                </div>
+                {{/each}}
+            </div>
+        </div>
+        {{/if}}
+
     </div>
 </div>

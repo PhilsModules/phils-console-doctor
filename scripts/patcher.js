@@ -13,6 +13,19 @@ export class PCDPatcher {
     static _onConsoleLog = null;
     static _onProfileRecord = null;
     static _onBlockRecord = null;
+    static _onBlockRecord = null;
+    static _onEventRecord = null;
+
+
+    static _getTimestamp() {
+        return new Date().toLocaleTimeString(undefined, {
+            hour12: false,
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            fractionalSecondDigits: 3
+        });
+    }
 
     static init() {
         console.log("PCD: Initializing Core Patcher...");
@@ -23,7 +36,22 @@ export class PCDPatcher {
             this._patchLoop();       // For Layer Idle Monitoring
             this._patchRenderLoop(); // For True Idle (Frame Render) & FPS
             this._patchPing();       // For Network Latency
+            this._patchRenderLoop(); // For True Idle (Frame Render) & FPS
+            this._patchPing();       // For Network Latency
+            this._patchRolls();      // For Dice Interception
+            this._patchAudio();      // For Sound Interception
+            this._patchMacros();     // For Macro Interception
+            this._patchSockets();    // For Socket Interception
+            this._patchNotifications(); // For UI Notifications
         });
+    }
+
+    /**
+     * Sets the callback for when a generic event is captured.
+     * @param {Function} callback (eventData) => void
+     */
+    static setEventHandler(callback) {
+        this._onEventRecord = callback;
     }
 
     /**
@@ -57,30 +85,35 @@ export class PCDPatcher {
         // Common wrapper generator
         const wrapRegister = (originalMethod, isOnce) => {
             return function (hook, fn) {
-                // 1. Identify Source Module via Stack Trace
+                // 1. Identify Source Module via Deep Stack Trace
                 let sourceModule = "Foundry Core";
                 let moduleId = "unknown";
+                let traceContext = "";
+
                 try {
                     const stack = new Error().stack;
                     const lines = stack.split('\n');
-                    for (const line of lines) {
+                    // Skip first 2 lines (Error and this wrapper)
+                    for (let i = 2; i < lines.length; i++) {
+                        const line = lines[i];
                         if (line.includes("phils-console-doctor")) continue;
-                        // Match "modules/<id>/"
+                        
+                        // Look for modules or systems
                         const match = line.match(/(?:modules|systems)\/([^\/]+)\//);
                         if (match && match[1]) {
                             moduleId = match[1];
-                            // Try to get nice title if module is loaded
                             const mod = game.modules?.get(moduleId) || game.system;
                             sourceModule = mod?.title || moduleId;
-                            break;
+                            // Keep the line unique signature for context
+                            traceContext = line.trim(); 
+                            break; 
                         }
                     }
                 } catch (e) { }
 
-                // 2. Tag the function (CRITICAL for Inspector)
                 fn._pcdModule = sourceModule;
                 fn._pcdModuleId = moduleId;
-                fn._pcdOriginal = true; // Mark as original user function
+                fn._pcdOriginal = true;
 
                 // 3. Create the Execution Wrapper (CRITICAL for Profiler)
                 const wrappedFn = function (...args) {
@@ -88,6 +121,22 @@ export class PCDPatcher {
                     if (!PCDPatcher.IS_PROFILING && !PCDPatcher.IS_DIAGNOSING) {
                         return fn.apply(this, args);
                     }
+
+                    // Inspect Arguments for "Why" (Context)
+                    let contextData = "";
+                    try {
+                        // Chat Message Specifics
+                        if (hook === "renderChatMessage" && args[0]) {
+                            const msg = args[0]; // The message object
+                            if (msg.flags) contextData = `Flags: ${Object.keys(msg.flags).join(', ')}`;
+                            if (msg.user) contextData += ` | User: ${msg.user.name}`;
+                            if (msg.flavor) contextData += ` | Flavor: ${msg.flavor}`;
+                        }
+                        // Generic Document Specifics (Actor, Item, etc.)
+                        else if (args[0] && typeof args[0] === 'object' && args[0].name) {
+                             contextData = `Target: ${args[0].name} (${args[0].constructor.name})`;
+                        }
+                    } catch(e) {}
 
                     const start = PCDPatcher.IS_PROFILING ? performance.now() : 0;
                     try {
@@ -97,6 +146,22 @@ export class PCDPatcher {
                         if (PCDPatcher.IS_DIAGNOSING && result === false && typeof hook === 'string' && hook.startsWith('pre')) {
                             if (PCDPatcher._onBlockRecord) PCDPatcher._onBlockRecord(sourceModule, hook);
                         }
+                        
+                        // Listener: Record all hooks if profiling/listening
+                        if (PCDPatcher.IS_PROFILING && PCDPatcher._onEventRecord) {
+                            // Filter out spammy hooks if needed, or just log all
+                            // Avoiding 'render' frame loops which are handled elsewhere
+                            if (!hook.includes("Ticker")) {
+                                 const details = contextData ? `${hook} [${contextData}]` : hook;
+                                 PCDPatcher._onEventRecord({
+                                    type: "Hook",
+                                    data: details,
+                                    source: { title: sourceModule, id: moduleId },
+                                    timestamp: PCDPatcher._getTimestamp()
+                                });
+                            }
+                        }
+
                         return result;
                     } catch (err) {
                         // We do NOT swallow errors here, they will bubble up to window.onerror -> Console Doctor
@@ -194,6 +259,16 @@ export class PCDPatcher {
                         // "Token", "Light", etc.
                         const name = this.constructor.name || "Placeable";
                         PCDPatcher._onProfileRecord("Canvas (Render)", `Refreshed ${name}`, performance.now() - start);
+                        
+                        // Listener: Record Canvas refresh
+                        if (PCDPatcher._onEventRecord) {
+                             PCDPatcher._onEventRecord({
+                                    type: "Canvas",
+                                    data: `Refreshed ${name}`,
+                                    source: { title: "Core", id: "core" },
+                                    timestamp: PCDPatcher._getTimestamp()
+                                });
+                        }
                     }
                 }
             };
@@ -271,5 +346,153 @@ export class PCDPatcher {
         } else {
             console.warn("PCD: Could not find canvas.app.ticker! Idle monitoring disabled.");
         }
+    }
+
+    static _patchRolls() {
+        const originalEvaluate = Roll.prototype.evaluate;
+        
+        // We need to support both sync and async evaluate, though in V12+ it's mostly async.
+        // However, Roll.prototype.evaluate might return a Promise or a Roll instance depending on usage/version.
+        // Actually, in V10+, evaluate({async: true}) returns Promise.
+        
+        Roll.prototype.evaluate = function(...args) {
+            // Capture source module before async operations lose the stack
+            let sourceModule = "Unknown";
+            let moduleId = "unknown";
+            try {
+                const stack = new Error().stack;
+                // Parse stack for module
+                 const lines = stack.split('\n');
+                for (const line of lines) {
+                    if (line.includes("phils-console-doctor") || line.includes("foundry.js")) continue;
+                    const match = line.match(/(?:modules|systems)\/([^\/]+)\//);
+                    if (match && match[1]) {
+                        moduleId = match[1];
+                        const mod = game.modules?.get(moduleId) || game.system;
+                        sourceModule = mod?.title || moduleId;
+                        break;
+                    }
+                }
+            } catch (e) {}
+
+            const handleResult = (roll) => {
+                try {
+                     if (PCDPatcher._onEventRecord) {
+                         const safeData = {
+                             type: "Roll",
+                             data: `${roll.formula} = ${roll.total}`,
+                             details: roll, // Keep full object for deeper inspection if needed
+                             timestamp: PCDPatcher._getTimestamp(),
+                             source: { id: moduleId, title: sourceModule },
+                             flavor: roll.options?.flavor || ""
+                         };
+                         PCDPatcher._onEventRecord(safeData);
+                     }
+                } catch(err) {
+                    console.error("PCD: Error capturing roll", err);
+                }
+            };
+
+            const result = originalEvaluate.apply(this, args);
+
+            if (result instanceof Promise) {
+                return result.then(r => {
+                    handleResult(r);
+                    return r;
+                });
+            } else {
+                handleResult(result);
+                return result;
+            }
+        };
+    }
+
+    static _patchAudio() {
+        if (typeof AudioHelper === 'undefined') return;
+        
+        const originalPlay = AudioHelper.play;
+        AudioHelper.play = function(src, ...args) {
+            // Capture before execution
+            if (PCDPatcher.IS_PROFILING && PCDPatcher._onEventRecord) {
+                 // Try to find source module from stack
+                let source = "Core";
+                try {
+                     const stack = new Error().stack;
+                     // simple match
+                     const match = stack.match(/modules\/([^\/]+)\//);
+                     if (match) source = match[1];
+                } catch(e){}
+
+                PCDPatcher._onEventRecord({
+                    type: "Sound",
+                    data: `Playing: ${src.split('/').pop()}`, // Short filename
+                    details: src,
+                    timestamp: PCDPatcher._getTimestamp(),
+                    source: { title: source, id: source }
+                });
+            }
+            return originalPlay.call(AudioHelper, src, ...args);
+        };
+    }
+
+    static _patchMacros() {
+         // Macro.prototype.execute (V10+)
+         if (typeof Macro === 'undefined') return;
+         
+         const originalExecute = Macro.prototype.execute;
+         Macro.prototype.execute = function(...args) {
+             if (PCDPatcher.IS_PROFILING && PCDPatcher._onEventRecord) {
+                  PCDPatcher._onEventRecord({
+                    type: "Macro",
+                    data: `Executed: ${this.name}`,
+                    timestamp: PCDPatcher._getTimestamp(),
+                    source: { title: "User/Macro", id: "macro" }
+                });
+             }
+             return originalExecute.apply(this, args);
+         };
+    }
+
+    static _patchSockets() {
+        if (!game.socket) return;
+        
+        const originalEmit = game.socket.emit;
+        game.socket.emit = function(...args) {
+            if (PCDPatcher.IS_PROFILING && PCDPatcher._onEventRecord) {
+                 // Args: event, data, options...
+                 const eventName = args[0];
+                 // Often "module.<id>"
+                 let sourceId = "core";
+                 if (typeof eventName === 'string' && eventName.startsWith('module.')) {
+                     sourceId = eventName.split('.')[1];
+                 }
+
+                 PCDPatcher._onEventRecord({
+                    type: "Socket",
+                    data: `Emit: ${eventName}`,
+                    details: args[1], // The payload
+                    timestamp: PCDPatcher._getTimestamp(),
+                    source: { title: sourceId, id: sourceId }
+                });
+            }
+            return originalEmit.apply(this, args);
+        };
+    }
+
+    static _patchNotifications() {
+        if (!ui.notifications) return;
+
+        const originalNotify = ui.notifications.notify;
+        ui.notifications.notify = function(message, type="info", options={}) {
+             if (PCDPatcher.IS_PROFILING && PCDPatcher._onEventRecord) {
+                 PCDPatcher._onEventRecord({
+                    type: "UI",
+                    data: `Notification (${type}): ${message}`,
+                    timestamp: PCDPatcher._getTimestamp(),
+                    source: { title: "Core UI", id: "ui" }
+                });
+             }
+             return originalNotify.call(this, message, type, options);
+        };
     }
 }

@@ -255,4 +255,27 @@ export class PCDInspector {
             sharedHooks: sharedHooks
         };
     }
+
+    /**
+     * Gets all modules listening to a specific hook.
+     * @param {string} hookName 
+     * @returns {string[]} List of Module IDs active on this hook
+     */
+    static getListeners(hookName) {
+        const hookEvents = Hooks.events;
+        // Foundry v12 use Map, older use Object
+        let listeners;
+        if (hookEvents instanceof Map) {
+            listeners = hookEvents.get(hookName);
+        } else {
+            listeners = hookEvents[hookName];
+        }
+
+        if (!listeners || !Array.isArray(listeners)) return [];
+
+        const modules = this._identifyListeners(listeners);
+        // Filter out "Unknown/System" and duplicates, and the Doctor itself
+        const unique = [...new Set(modules)];
+        return unique.filter(m => m !== "Unknown/System" && m !== "phils-console-doctor");
+    }
 }

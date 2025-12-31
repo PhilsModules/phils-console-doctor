@@ -1,7 +1,7 @@
 {
   "id": "phils-console-doctor",
   "title": "Phils Console Doctor",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "A smart console error tracker that captures logs, groups duplicates, identifies culprit modules, and helps you fix them with AI.",
   "authors": [
     {
@@ -18,9 +18,10 @@
     "verified": "13"
   },
   "esmodules": [
-    "scripts/patcher.js",
-    "scripts/profiler.js",
+    "scripts/resolver.js",
     "scripts/inspector.js",
+    "scripts/profiler.js",
+    "scripts/patcher.js",
     "scripts/main.js"
   ],
   "styles": [
