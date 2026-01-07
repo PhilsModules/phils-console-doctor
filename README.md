@@ -2,20 +2,22 @@
 
 # Phil's Console Doctor 🏥
 
-![Foundry v13 Compatible](https://img.shields.io/badge/Foundry-v13-brightgreen?style=flat-square) ![Foundry v12 Compatible](https://img.shields.io/badge/Foundry-v12-green?style=flat-square) ![License](https://img.shields.io/badge/License-GPLv3_%2F_CC_BY--NC--ND-blue?style=flat-square)
+![Foundry v13 Compatible](https://img.shields.io/badge/Foundry-v13-brightgreen?style=flat-square) ![Foundry v12 Compatible](https://img.shields.io/badge/Foundry-v12-green?style=flat-square) ![License](https://img.shields.io/badge/License-GPLv3-blue?style=flat-square)
 [![Version](https://img.shields.io/badge/Version-1.5.2-orange?style=flat-square)](https://github.com/PhilsModules/phils-console-doctor/releases) [![Patreon](https://img.shields.io/badge/SUPPORT-Patreon-ff424d?style=flat-square&logo=patreon)](https://www.patreon.com/PhilsModules)
 
 <br>
 
-**Dein persönlicher Diagnose Assistent für die Analyse von Fehlern mit einem Klick.**
+**Your personal diagnostic assistant to analyze errors with a single click.**
 <br>
-_Your personal diagnostic assistant to analyze errors with a single click._
+_Dein persönlicher Diagnose Assistent für die Analyse von Fehlern mit einem Klick._
 
 <br>
 
-<a href="#-deutsche-anleitung"><img src="https://img.shields.io/badge/%20-Deutsche_Anleitung-black?style=for-the-badge&logo=germany&logoColor=red" alt="Deutsche Anleitung"></a> <a href="#-english-instructions"><img src="https://img.shields.io/badge/%20-English_Instructions-black?style=for-the-badge&logo=united-kingdom&logoColor=white" alt="English Instructions"></a>
+<a href="#-english-instructions"><img src="https://img.shields.io/badge/%20-English_Instructions-black?style=for-the-badge&logo=united-kingdom&logoColor=white" alt="English Instructions"></a> <a href="#-deutsche-anleitung"><img src="https://img.shields.io/badge/%20-Deutsche_Anleitung-black?style=for-the-badge&logo=germany&logoColor=red" alt="Deutsche Anleitung"></a> <a href="Updates.md"><img src="https://img.shields.io/badge/%20-Update_Logs-black?style=for-the-badge&logo=clock&logoColor=white" alt="Updates"></a>
 
 </div>
+
+<br>
 
 > [!WARNING]
 >
@@ -27,86 +29,9 @@ _Your personal diagnostic assistant to analyze errors with a single click._
 
 <br>
 
-# <img src="https://flagcdn.com/48x36/de.png" width="28" height="21" alt="DE"> Deutsche Anleitung
-
-**Schluss mit dem Raten warum das Spiel ruckelt.**
-
-Phil's Console Doctor überwacht deine Konsole in Echtzeit auf Fehler sowie Warnungen und lässt dich diese mit einem Klick per KI analysieren. Er fängt Bugs ab und erkennt Konflikte um dir zu helfen deine Welt zu reparieren.
-
-## 🚀 Funktionen
-
-* ⚡ **Echtzeit Monitoring:** Fängt `console.warn` und `console.error` Logs sofort ab.
-* 🛡️ **Startup Schutz:** Startet sofort beim Laden des Skripts um Fehler zu fangen die bereits _vor_ dem vollständigen Start von Foundry passieren.
-* 🤖 **Multi KI Support:** Wähle deinen Assistenten wie Gemini, ChatGPT, Claude, Copilot oder Perplexity.
-* 🏷️ **Module Blame:** Erkennt automatisch welches Modul einen Fehler verursacht hat und markiert es deutlich (zum Beispiel `[Midi QOL]`).
-* 🧹 **Smart Grouping:** Fasst identische Fehler zusammen (zum Beispiel `x5` Badge) damit dein Log sauber und lesbar bleibt.
-* 📝 **Smarte Prompts:** Erstellt automatisch einen detaillierten Prompt mit Fehlermeldung, Stack Trace und deiner Liste der Module.
-
-## 🛡️ Conflict Resolver 2.0 (Neu in v1.5)
-
-* **Gnadenloses AB Testing:** Testet explizit beide Hälften deiner Modulliste um nichts zu übersehen.
-* **Split Conflict Detection:** Findet Fehler die nur durch die Kombination zweier Module entstehen durch automatisches Mischen und Testen.
-* **Safelist:** Markiere wichtige Module als Sicher damit sie niemals deaktiviert werden.
-* **Hook Inspector:** Visualisiert welche Module um die gleiche Logik kämpfen.
-
-## ⚡ Performance Monitor und Factory Reset
-
-* **System Monitor:** Zeigt FPS, Ping und Render Zeiten als Idle Load an.
-* **Lag Killer:** Identifiziert Performance Fresser in Millisekunden.
-* **Smart Reset:** Lösche Einstellungen auf 3 Ebenen wie Welt (DB), User (Lokal) oder Dokumente (Flags).
-* **Smart Poller:** Hintergrund Scans laufen ressourcensparend nur während der Aufnahme.
-
-## 📦 Installation
-
-1.  Öffne Foundry VTT.
-2.  Gehe zum Reiter **Addon Modules**.
-3.  Klicke auf **Install Module**.
-4.  Füge die folgende **Manifest URL** unten ein:
-    ```text
-    [https://github.com/PhilsModules/phils-console-doctor/releases/latest/download/module.json](https://github.com/PhilsModules/phils-console-doctor/releases/latest/download/module.json)
-    ```
-5.  Klicke auf **Install**.
-
-## 📖 Handbuch und Bedienung
-
-### 1. Tab: >\_ Konsole (Fehler und Diagnose)
-
-Dein Dashboard. Hier landen alle Fehlermeldungen (Rot) und Warnungen (Gelb).
-
-* **Analyse:** Klicke auf den **Zauberstab** oder den **KI Button** neben einem Fehler. Der Doktor erstellt einen perfekten Text den du an eine KI wie ChatGPT oder Claude schicken kannst um die Lösung zu finden.
-* **Filter:** Nutze die Suche oder die Buttons oben um die Liste zu filtern.
-
-### 2. Tab: Performance Monitor
-
-Hier prüfst du warum Foundry langsam ist.
-
-* **Wichtig:** Du musst erst die **Aufnahme starten** (Kreis Icon oben rechts) damit Daten gesammelt werden.
-* **Lag Killer:** Sortiere die Liste nach **Total (ms)**. Module ganz oben verbrauchen am meisten Leistung.
-* **System:** Ganz oben siehst du FPS (Bilder pro Sekunde) und Ping (Verzögerung).
-
-### 3. Tab: Konflikte (Conflict Resolver)
-
-Wenn zwei Module nicht miteinander können.
-
-* **Problemlösung:** Klicke auf den Button **Konflikt Lösung starten**.
-* **Safelist:** Ein Fenster erscheint. Wähle hier Module aus die **NIEMALS** abgeschaltet werden dürfen (zum Beispiel dein Spielsystem `dnd5e` oder `pf2e` sowie `libWrapper` oder Karten Module).
-* **Der Prozess:** Foundry lädt neu und schaltet testweise Module aus. Du musst nur antworten ob der Fehler noch da ist (Ja oder Nein). Das wiederholt sich bis der Schuldige gefunden ist.
-
-### 4. Tab: Listener (Hooks und Loops)
-
-Für Profis die "stille" Fehler oder Endlosschleifen suchen.
-
-* **Aufnahme:** Auch hier musst du die Aufnahme starten.
-* **Schleifen Schutz (Loop Protection):** Das Modul überwacht im Hintergrund alles. Wenn ein Modul durchdreht (zum Beispiel 100 Chat Nachrichten pro Sekunde sendet) stoppt der Doktor es automatisch und zeigt dir eine Warnung.
-* **Hooks:** Zeigt dir live welche Events im Hintergrund feuern.
-
-### 5. Tab: Module (Verwaltung und Reset)
-
-Hier siehst du alle aktiven Module.
-
-* **Factory Reset:** Wenn ein Modul kaputt ist mache einen **Rechtsklick** auf die Karte in der Liste. Wähle **Factory Reset** um alle Einstellungen dieses Moduls (Welt, Client oder Flags) komplett zu löschen und es auf Neu zurückzusetzen.
-
 ---
+
+<br>
 
 # <img src="https://flagcdn.com/48x36/gb.png" width="28" height="21" alt="EN"> English Instructions
 
@@ -116,37 +41,37 @@ Phil's Console Doctor is your personal diagnostic assistant for Foundry VTT. It 
 
 ## 🚀 Key Features
 
-* **Real Time Monitoring:** Captures `console.warn` and `console.error` logs instantly.
-* **Startup Protection:** Activates immediately when the script loads to catch bugs that happen _before_ Foundry is fully initialized.
-* **Multi AI Support:** Choose your preferred AI assistant like Gemini, ChatGPT, Claude, Copilot or Perplexity.
-* **Module Blame:** Automatically identifies and badges the module responsible for an error (example `[Midi QOL]`).
-* **Smart Grouping:** Deduplicates identical errors to keep your log clean.
-* **Smart Prompts:** Automatically generates a detailed prompt with the error message, stack trace and your active module list.
+- **Real Time Monitoring:** Captures `console.warn` and `console.error` logs instantly.
+- **Startup Protection:** Activates immediately when the script loads to catch bugs that happen _before_ Foundry is fully initialized.
+- **Multi AI Support:** Choose your preferred AI assistant like Gemini, ChatGPT, Claude, Copilot or Perplexity.
+- **Module Blame:** Automatically identifies and badges the module responsible for an error (example `[Midi QOL]`).
+- **Smart Grouping:** Deduplicates identical errors to keep your log clean.
+- **Smart Prompts:** Automatically generates a detailed prompt with the error message, stack trace and your active module list.
 
-## 🛡️ Conflict Resolver 2.0 (New in v1.5)
+### 🛡️ Conflict Resolver 2.0 (New in v1.5)
 
-* **Merciless AB Testing:** Explicitly tests both halves to confirm where the bug hides.
-* **Split Conflict Detection:** Detects bugs caused by the combination of _two_ specific modules via shuffles and retries until isolated.
-* **Safelist:** Mark essential modules as Safe so they are never disabled during testing.
-* **Hook Inspector:** Visualizes which modules are fighting over the same logic.
+- **Merciless AB Testing:** Explicitly tests both halves to confirm where the bug hides.
+- **Split Conflict Detection:** Detects bugs caused by the combination of _two_ specific modules via shuffles and retries until isolated.
+- **Safelist:** Mark essential modules as Safe so they are never disabled during testing.
+- **Hook Inspector:** Visualizes which modules are fighting over the same logic.
 
-## ⚡ Performance Monitor and Factory Reset
+### ⚡ Performance Monitor and Factory Reset
 
-* **System Monitor:** Tracks FPS, Latency (Ping) and Frame Times (Idle Load).
-* **Lag Killer:** Instantly identifies performance bottlenecks in ms.
-* **Smart Reset:** Clean settings on 3 levels such as World (DB), User (Local) or Documents (Flags).
-* **Smart Poller:** Background monitoring now sleeps when not recording.
+- **System Monitor:** Tracks FPS, Latency (Ping) and Frame Times (Idle Load).
+- **Lag Killer:** Instantly identifies performance bottlenecks in ms.
+- **Smart Reset:** Clean settings on 3 levels such as World (DB), User (Local) or Documents (Flags).
+- **Smart Poller:** Background monitoring now sleeps when not recording.
 
 ## 📦 Installation
 
-1.  Open Foundry VTT.
-2.  Go to the **Addon Modules** tab.
-3.  Click **Install Module**.
-4.  Paste the following **Manifest URL** into the field:
-    ```text
-    [https://github.com/PhilsModules/phils-console-doctor/releases/latest/download/module.json](https://github.com/PhilsModules/phils-console-doctor/releases/latest/download/module.json)
-    ```
-5.  Click **Install**.
+1.  Open Foundry VTT.
+2.  Go to the **Addon Modules** tab.
+3.  Click **Install Module**.
+4.  Paste the following **Manifest URL** into the field:
+    ```text
+    https://github.com/PhilsModules/phils-console-doctor/releases/latest/download/module.json
+    ```
+5.  Click **Install**.
 
 ## 📖 User Manual
 
@@ -154,38 +79,125 @@ Phil's Console Doctor is your personal diagnostic assistant for Foundry VTT. It 
 
 Your main dashboard. All errors (Red) and warnings (Yellow) appear here.
 
-* **Analysis:** Click the **Wand** or **AI Button** next to an error. The Doctor generates a perfect prompt for you to send to ChatGPT or Claude.
-* **Filter:** Use the search bar or top buttons to filter the list.
+- **Analysis:** Click the **Wand** or **AI Button** next to an error. The Doctor generates a perfect prompt for you to send to ChatGPT or Claude.
+- **Filter:** Use the search bar or top buttons to filter the list.
 
 ### 2. Tab: Performance Monitor
 
 Check why Foundry is lagging.
 
-* **Important:** You must **Start Recording** (Circle Icon top right) to gather data.
-* **Lag Killer:** Sort the list by **Total (ms)**. Modules at the top are using the most resources.
-* **System:** View your FPS and Ping (Latency) at the very top.
+- **Important:** You must **Start Recording** (Circle Icon top right) to gather data.
+- **Lag Killer:** Sort the list by **Total (ms)**. Modules at the top are using the most resources.
+- **System:** View your FPS and Ping (Latency) at the very top.
 
 ### 3. Tab: Conflicts (Conflict Resolver)
 
 Use this when two modules aren't getting along.
 
-* **Resolution:** Click the button **Start Conflict Resolution**.
-* **Safelist:** A window appears. Select modules that must **NEVER** be disabled (example your System `dnd5e` or `pf2e`, `libWrapper` or Map modules).
-* **The Process:** Foundry will reload and test modules. You simply answer "Is the issue still here?" (Yes or No). This repeats until the culprit is found.
+- **Resolution:** Click the button **Start Conflict Resolution**.
+- **Safelist:** A window appears. Select modules that must **NEVER** be disabled (example your System `dnd5e` or `pf2e`, `libWrapper` or Map modules).
+- **The Process:** Foundry will reload and test modules. You simply answer "Is the issue still here?" (Yes or No). This repeats until the culprit is found.
 
 ### 4. Tab: Listener (Hooks and Loops)
 
 For advanced users looking for silent bugs or infinite loops.
 
-* **Recording:** You must start recording here too.
-* **Loop Protection:** The Doctor monitors everything in the background. If a module goes crazy (example sending 100 chat messages per second) the Doctor automatically stops it and warns you.
-* **Hooks:** See exactly which events are firing in the background.
+- **Recording:** You must start recording here too.
+- **Loop Protection:** The Doctor monitors everything in the background. If a module goes crazy (example sending 100 chat messages per second) the Doctor automatically stops it and warns you.
+- **Hooks:** See exactly which events are firing in the background.
 
 ### 5. Tab: Modules (Management and Reset)
 
 View all active modules.
 
-* **Factory Reset:** If a module is broken **Right Click** its card in the list. Select **Factory Reset** to completely wipe its settings (World, Client or Flags) and restore it to a fresh state.
+- **Factory Reset:** If a module is broken **Right Click** its card in the list. Select **Factory Reset** to completely wipe its settings (World, Client or Flags) and restore it to a fresh state.
+
+<br>
+
+---
+
+<br>
+
+# <img src="https://flagcdn.com/48x36/de.png" width="28" height="21" alt="DE"> Deutsche Anleitung
+
+**Schluss mit dem Raten warum das Spiel ruckelt.**
+
+Phil's Console Doctor überwacht deine Konsole in Echtzeit auf Fehler sowie Warnungen und lässt dich diese mit einem Klick per KI analysieren. Er fängt Bugs ab und erkennt Konflikte um dir zu helfen deine Welt zu reparieren.
+
+## 🚀 Funktionen
+
+- ⚡ **Echtzeit Monitoring:** Fängt `console.warn` und `console.error` Logs sofort ab.
+- 🛡️ **Startup Schutz:** Startet sofort beim Laden des Skripts um Fehler zu fangen die bereits _vor_ dem vollständigen Start von Foundry passieren.
+- 🤖 **Multi KI Support:** Wähle deinen Assistenten wie Gemini, ChatGPT, Claude, Copilot oder Perplexity.
+- 🏷️ **Module Blame:** Erkennt automatisch welches Modul einen Fehler verursacht hat und markiert es deutlich (zum Beispiel `[Midi QOL]`).
+- 🧹 **Smart Grouping:** Fasst identische Fehler zusammen (zum Beispiel `x5` Badge) damit dein Log sauber und lesbar bleibt.
+- 📝 **Smarte Prompts:** Erstellt automatisch einen detaillierten Prompt mit Fehlermeldung, Stack Trace und deiner Liste der Module.
+
+### 🛡️ Conflict Resolver 2.0 (Neu in v1.5)
+
+- **Gnadenloses AB Testing:** Testet explizit beide Hälften deiner Modulliste um nichts zu übersehen.
+- **Split Conflict Detection:** Findet Fehler die nur durch die Kombination zweier Module entstehen durch automatisches Mischen und Testen.
+- **Safelist:** Markiere wichtige Module als Sicher damit sie niemals deaktiviert werden.
+- **Hook Inspector:** Visualisiert welche Module um die gleiche Logik kämpfen.
+
+### ⚡ Performance Monitor und Factory Reset
+
+- **System Monitor:** Zeigt FPS, Ping und Render Zeiten als Idle Load an.
+- **Lag Killer:** Identifiziert Performance Fresser in Millisekunden.
+- **Smart Reset:** Lösche Einstellungen auf 3 Ebenen wie Welt (DB), User (Lokal) oder Dokumente (Flags).
+- **Smart Poller:** Hintergrund Scans laufen ressourcensparend nur während der Aufnahme.
+
+## 📦 Installation
+
+1.  Öffne Foundry VTT.
+2.  Gehe zum Reiter **Addon Modules**.
+3.  Klicke auf **Install Module**.
+4.  Füge die folgende **Manifest URL** unten ein:
+    ```text
+    https://github.com/PhilsModules/phils-console-doctor/releases/latest/download/module.json
+    ```
+5.  Klicke auf **Install**.
+
+## 📖 Handbuch und Bedienung
+
+### 1. Tab: >\_ Konsole (Fehler und Diagnose)
+
+Dein Dashboard. Hier landen alle Fehlermeldungen (Rot) und Warnungen (Gelb).
+
+- **Analyse:** Klicke auf den **Zauberstab** oder den **KI Button** neben einem Fehler. Der Doktor erstellt einen perfekten Text den du an eine KI wie ChatGPT oder Claude schicken kannst um die Lösung zu finden.
+- **Filter:** Nutze die Suche oder die Buttons oben um die Liste zu filtern.
+
+### 2. Tab: Performance Monitor
+
+Hier prüfst du warum Foundry langsam ist.
+
+- **Wichtig:** Du musst erst die **Aufnahme starten** (Kreis Icon oben rechts) damit Daten gesammelt werden.
+- **Lag Killer:** Sortiere die Liste nach **Total (ms)**. Module ganz oben verbrauchen am meisten Leistung.
+- **System:** Ganz oben siehst du FPS (Bilder pro Sekunde) und Ping (Verzögerung).
+
+### 3. Tab: Konflikte (Conflict Resolver)
+
+Wenn zwei Module nicht miteinander können.
+
+- **Problemlösung:** Klicke auf den Button **Konflikt Lösung starten**.
+- **Safelist:** Ein Fenster erscheint. Wähle hier Module aus die **NIEMALS** abgeschaltet werden dürfen (zum Beispiel dein Spielsystem `dnd5e` oder `pf2e` sowie `libWrapper` oder Karten Module).
+- **Der Prozess:** Foundry lädt neu und schaltet testweise Module aus. Du musst nur antworten ob der Fehler noch da ist (Ja oder Nein). Das wiederholt sich bis der Schuldige gefunden ist.
+
+### 4. Tab: Listener (Hooks und Loops)
+
+Für Profis die "stille" Fehler oder Endlosschleifen suchen.
+
+- **Aufnahme:** Auch hier musst du die Aufnahme starten.
+- **Schleifen Schutz (Loop Protection):** Das Modul überwacht im Hintergrund alles. Wenn ein Modul durchdreht (zum Beispiel 100 Chat Nachrichten pro Sekunde sendet) stoppt der Doktor es automatisch und zeigt dir eine Warnung.
+- **Hooks:** Zeigt dir live welche Events im Hintergrund feuern.
+
+### 5. Tab: Module (Verwaltung und Reset)
+
+Hier siehst du alle aktiven Module.
+
+- **Factory Reset:** Wenn ein Modul kaputt ist mache einen **Rechtsklick** auf die Karte in der Liste. Wähle **Factory Reset** um alle Einstellungen dieses Moduls (Welt, Client oder Flags) komplett zu löschen und es auf Neu zurückzusetzen.
+
+<br>
 
 ---
 
@@ -193,20 +205,20 @@ View all active modules.
 
 This module uses a dual license structure.
 
-* **Code:** GNU GPLv3
-* **Assets:** CC BY-NC-ND 4.0
+- **Code:** GNU GPLv3
+- **Assets:** CC BY-NC-ND 4.0
 
 See `LICENSE` file for details.
 
 <br>
 
 <div align="center">
-    <h2>❤️ Support the Development</h2>
-    <p>If you enjoy this module and want to support open source development for Foundry VTT check out my Patreon.</p>
-    <p>Gefällt dir das Modul? Unterstütze die Weiterentwicklung auf Patreon.</p>
-    <a href="https://www.patreon.com/PhilsModules">
-        <img src="https://c5.patreon.com/external/logo/become_a_patron_button.png" alt="Become a Patron" width="200" />
-    </a>
-    <br><br>
-    <p><i>Made with ❤️ for the Foundry VTT Community</i></p>
+    <h2>❤️ Support the Development</h2>
+    <p>If you enjoy this module and want to support open source development for Foundry VTT check out my Patreon.</p>
+    <p>Gefällt dir das Modul? Unterstütze die Weiterentwicklung auf Patreon.</p>
+    <a href="https://www.patreon.com/PhilsModules">
+        <img src="https://c5.patreon.com/external/logo/become_a_patron_button.png" alt="Become a Patron" width="200" />
+    </a>
+    <br><br>
+    <p><i>Made with ❤️ for the Foundry VTT Community</i></p>
 </div>
