@@ -29,22 +29,22 @@ _Your personal diagnostic assistant to analyze errors with a single click._
 
 # <img src="https://flagcdn.com/48x36/de.png" width="28" height="21" alt="DE"> Deutsche Anleitung
 
-**Schluss mit Raten warum das Spiel ruckelt.**
+**Schluss mit dem Raten warum das Spiel ruckelt.**
 
 Phil's Console Doctor überwacht deine Konsole in Echtzeit auf Fehler sowie Warnungen und lässt dich diese mit einem Klick per KI analysieren. Er fängt Bugs ab und erkennt Konflikte um dir zu helfen deine Welt zu reparieren.
 
 ## 🚀 Funktionen
 
 * ⚡ **Echtzeit Monitoring:** Fängt `console.warn` und `console.error` Logs sofort ab.
-* 🛡️ **Startup Schutz:** Startet sofort beim Laden des Skripts um Fehler zu fangen die _vor_ dem vollständigen Start von Foundry passieren.
+* 🛡️ **Startup Schutz:** Startet sofort beim Laden des Skripts um Fehler zu fangen die bereits _vor_ dem vollständigen Start von Foundry passieren.
 * 🤖 **Multi KI Support:** Wähle deinen Assistenten wie Gemini, ChatGPT, Claude, Copilot oder Perplexity.
-* 🏷️ **Module Blame:** Erkennt automatisch welches Modul einen Fehler verursacht hat und markiert es (zum Beispiel `[Midi QOL]`).
-* 🧹 **Smart Grouping:** Fasst identische Fehler zusammen (zum Beispiel `x5` Badge) damit dein Log sauber bleibt.
-* 📝 **Smarte Prompts:** Erstellt automatisch einen detaillierten Prompt mit Fehlermeldung, Stack Trace und deiner Modul Liste.
+* 🏷️ **Module Blame:** Erkennt automatisch welches Modul einen Fehler verursacht hat und markiert es deutlich (zum Beispiel `[Midi QOL]`).
+* 🧹 **Smart Grouping:** Fasst identische Fehler zusammen (zum Beispiel `x5` Badge) damit dein Log sauber und lesbar bleibt.
+* 📝 **Smarte Prompts:** Erstellt automatisch einen detaillierten Prompt mit Fehlermeldung, Stack Trace und deiner Liste der Module.
 
 ## 🛡️ Conflict Resolver 2.0 (Neu in v1.5)
 
-* **Gnadenloses AB Testing:** Testet explizit beide Hälften um nichts zu übersehen.
+* **Gnadenloses AB Testing:** Testet explizit beide Hälften deiner Modulliste um nichts zu übersehen.
 * **Split Conflict Detection:** Findet Fehler die nur durch die Kombination zweier Module entstehen durch automatisches Mischen und Testen.
 * **Safelist:** Markiere wichtige Module als Sicher damit sie niemals deaktiviert werden.
 * **Hook Inspector:** Visualisiert welche Module um die gleiche Logik kämpfen.
@@ -54,18 +54,18 @@ Phil's Console Doctor überwacht deine Konsole in Echtzeit auf Fehler sowie Warn
 * **System Monitor:** Zeigt FPS, Ping und Render Zeiten als Idle Load an.
 * **Lag Killer:** Identifiziert Performance Fresser in Millisekunden.
 * **Smart Reset:** Lösche Einstellungen auf 3 Ebenen wie Welt (DB), User (Lokal) oder Dokumente (Flags).
-* **Smart Poller:** Hintergrund Scans laufen nur während der Aufnahme.
+* **Smart Poller:** Hintergrund Scans laufen ressourcensparend nur während der Aufnahme.
 
 ## 📦 Installation
 
-1.  Öffne Foundry VTT.
-2.  Gehe zum Reiter **Add-on Modules**.
-3.  Klicke auf **Install Module**.
-4.  Füge die folgende **Manifest URL** unten ein:
-    ```text
-    [https://github.com/PhilsModules/phils-console-doctor/releases/latest/download/module.json](https://github.com/PhilsModules/phils-console-doctor/releases/latest/download/module.json)
-    ```
-5.  Klicke auf **Install**.
+1.  Öffne Foundry VTT.
+2.  Gehe zum Reiter **Addon Modules**.
+3.  Klicke auf **Install Module**.
+4.  Füge die folgende **Manifest URL** unten ein:
+    ```text
+    [https://github.com/PhilsModules/phils-console-doctor/releases/latest/download/module.json](https://github.com/PhilsModules/phils-console-doctor/releases/latest/download/module.json)
+    ```
+5.  Klicke auf **Install**.
 
 ## 📖 Handbuch und Bedienung
 
@@ -104,7 +104,7 @@ Für Profis die "stille" Fehler oder Endlosschleifen suchen.
 
 Hier siehst du alle aktiven Module.
 
-* **Factory Reset:** Wenn ein Modul kaputt ist mache einen **Rechtsklick** auf die Karte im Liste. Wähle **Factory Reset** um alle Einstellungen dieses Moduls (Welt, Client oder Flags) komplett zu löschen und es auf Neu zurückzusetzen.
+* **Factory Reset:** Wenn ein Modul kaputt ist mache einen **Rechtsklick** auf die Karte in der Liste. Wähle **Factory Reset** um alle Einstellungen dieses Moduls (Welt, Client oder Flags) komplett zu löschen und es auf Neu zurückzusetzen.
 
 ---
 
@@ -139,14 +139,14 @@ Phil's Console Doctor is your personal diagnostic assistant for Foundry VTT. It 
 
 ## 📦 Installation
 
-1.  Open Foundry VTT.
-2.  Go to the **Add-on Modules** tab.
-3.  Click **Install Module**.
-4.  Paste the following **Manifest URL** into the field:
-    ```text
-    [https://github.com/PhilsModules/phils-console-doctor/releases/latest/download/module.json](https://github.com/PhilsModules/phils-console-doctor/releases/latest/download/module.json)
-    ```
-5.  Click **Install**.
+1.  Open Foundry VTT.
+2.  Go to the **Addon Modules** tab.
+3.  Click **Install Module**.
+4.  Paste the following **Manifest URL** into the field:
+    ```text
+    [https://github.com/PhilsModules/phils-console-doctor/releases/latest/download/module.json](https://github.com/PhilsModules/phils-console-doctor/releases/latest/download/module.json)
+    ```
+5.  Click **Install**.
 
 ## 📖 User Manual
 
@@ -201,12 +201,12 @@ See `LICENSE` file for details.
 <br>
 
 <div align="center">
-    <h2>❤️ Support the Development</h2>
-    <p>If you enjoy this module and want to support open source development for Foundry VTT check out my Patreon.</p>
-    <p>Gefällt dir das Modul? Unterstütze die Weiterentwicklung auf Patreon.</p>
-    <a href="https://www.patreon.com/PhilsModules">
-        <img src="https://c5.patreon.com/external/logo/become_a_patron_button.png" alt="Become a Patron" width="200" />
-    </a>
-    <br><br>
-    <p><i>Made with ❤️ for the Foundry VTT Community</i></p>
+    <h2>❤️ Support the Development</h2>
+    <p>If you enjoy this module and want to support open source development for Foundry VTT check out my Patreon.</p>
+    <p>Gefällt dir das Modul? Unterstütze die Weiterentwicklung auf Patreon.</p>
+    <a href="https://www.patreon.com/PhilsModules">
+        <img src="https://c5.patreon.com/external/logo/become_a_patron_button.png" alt="Become a Patron" width="200" />
+    </a>
+    <br><br>
+    <p><i>Made with ❤️ for the Foundry VTT Community</i></p>
 </div>
