@@ -12,7 +12,7 @@
   - Instrumentation attaches dynamically ONLY while the Task Manager window is open, and is cleanly restored upon closing.
 - **🩺 Full-Height Error Log & AI Explanation:**
   - Full-height log stream with zero layout squishing.
-  - Instant `✨ Per KI erklären & beheben` action to generate diagnostic prompts for Google Gemini, ChatGPT, or Claude.
+  - Instant **✨ Explain & Fix via AI** button (EN) / **✨ Per KI erklären & beheben** (DE) — copies a full diagnostic prompt (error, stack trace, active modules) and opens your chosen AI assistant.
   - Fixed scroll position jumping and template helper crashes.
 - **🛡️ Conflict Detective & Automated Culprit Finder (Bisect 2.0):**
   - Detects silent failures (`return false`), method overrides, and hook clashes.

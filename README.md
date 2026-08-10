@@ -148,7 +148,7 @@ Phil's Console Doctor 2.0 bringt den vertrauten **Windows 11 Task Manager** dire
 
 ### 3. 🩺 Fehler-Protokoll (Logs & KI-Doktor)
 - **Volle 100% Fensterhöhe:** Keine gestauchten Listen mehr – flüssiges Scrollen ohne Springen.
-- **✨ Per KI erklären:** Kopiert Fehlermeldung, Stacktrace und Modulliste mit einem Klick und öffnet Google Gemini, ChatGPT oder Claude für die Sofortlösung.
+- **✨ Explain & Fix via AI** (EN) / **✨ Per KI erklären & beheben** (DE): Kopiert Fehlermeldung, Stacktrace und Modulliste mit einem Klick und öffnet Google Gemini, ChatGPT oder Claude für die Sofortlösung.
 - **Filter:** Schnellfilter für `Warnungen` und `Fehler`.
 
 ### 4. 🛡️ Konflikt-Finder (Stille Fehler & Streit)
