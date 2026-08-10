@@ -1,3 +1,35 @@
+## v2.0.0 - The Windows 11 Task Manager Overhaul & Zero-Overhead Engine
+
+- **🗂️ Authentic Windows 11 Task Manager Interface:**
+  - **Centered Header Search:** Universal search bar in the title bar to quickly filter modules, hooks, errors, and functions across the entire suite.
+  - **Left Fluent Sidebar:** Sleek, collapsible navigation sidebar with dedicated views: *Prozesse*, *Leistung*, *Fehler-Logs*, *Konflikte*, *Problemlöser*, and *Bereinigung*.
+  - **Windows 11 Process Table:** Clean, authentic table with column summary totals in headers (`3% CPU`, `16.6ms GPU`, `48/s Aktionen`).
+  - **Heatmap Cell Tinting:** Replaced clunky progress bars with clean numerical values and Windows 11-style dynamic heat tinting.
+  - **Smart Process Grouping:** Automatically categorizes processes into *Aktive Module*, *Foundry Kernsystem & Engine*, and *Hintergrund-Module (Leerlauf)*.
+  - **Row Selection & Actions:** Single-click module selection enables top action buttons (*Modul deaktivieren*, *Bereinigen*).
+- **⚡ Strict Zero-Overhead Lifecycle (100% Native at Startup):**
+  - Profiling, Pixi ticker hooks, and ping pollers **never run at startup**. Foundry loads 100% untampered and native.
+  - Instrumentation attaches dynamically ONLY while the Task Manager window is open, and is cleanly restored upon closing.
+- **🩺 Full-Height Error Log & AI Explanation:**
+  - Full-height log stream with zero layout squishing.
+  - Instant `✨ Per KI erklären & beheben` action to generate diagnostic prompts for Google Gemini, ChatGPT, or Claude.
+  - Fixed scroll position jumping and template helper crashes.
+- **🛡️ Conflict Detective & Automated Culprit Finder (Bisect 2.0):**
+  - Detects silent failures (`return false`), method overrides, and hook clashes.
+  - Step-by-step automated A/B half-split troubleshooting wizard with Safelist protection.
+- **🧹 3-Tier Module Factory Reset:**
+  - Deep-clean global database settings, local browser storage, and document flags.
+- **🚀 Foundry VTT v14+ Compatibility:**
+  - Verified and optimized for Foundry VTT v12, v13, and v14 with PixiJS v8 architecture.
+
+## v1.5.2
+
+- Manifest cleanup and normalization.
+
+## v1.5.1 - Fixes
+
+- **Maintenance:** Fixed an issue where the `templates` folder was missing from the release package.
+
 ## v1.5.0 - Conflict Resolver 2.0 & Smart Reset
 
 - **Conflict Resolver 2.0 (The "Merciless" Logic):**
